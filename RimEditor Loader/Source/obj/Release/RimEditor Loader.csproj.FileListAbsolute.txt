@@ -1,0 +1,5 @@
+C:\Users\rrmcinv\Desktop\RimEditor Loader\Source\obj\Release\RimEditor Loader.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\RimEditor Loader\Source\obj\Release\RimEditor Loader.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\RimEditor Loader\Source\obj\Release\RimEditor.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\RimEditor Loader\1.1\Assemblies\RimEditor.dll.config
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\RimEditor Loader\1.1\Assemblies\RimEditor.dll

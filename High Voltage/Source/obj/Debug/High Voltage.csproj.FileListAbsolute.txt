@@ -1,0 +1,4 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\High Voltage\1.1\Assemblies\High Voltage.dll
+C:\Users\rrmcinv\Desktop\High Voltage\Source\obj\Debug\High Voltage.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\High Voltage\Source\obj\Debug\High Voltage.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\High Voltage\Source\obj\Debug\High Voltage.dll

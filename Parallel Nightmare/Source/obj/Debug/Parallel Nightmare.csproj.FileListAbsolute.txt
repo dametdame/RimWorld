@@ -1,0 +1,4 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Parallel Nightmare\1.1\Assemblies\TimeControl.dll
+C:\Users\rrmcinv\Desktop\Parallel Nightmare\Source\obj\Debug\Parallel Nightmare.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\Parallel Nightmare\Source\obj\Debug\Parallel Nightmare.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\Parallel Nightmare\Source\obj\Debug\TimeControl.dll

@@ -1,0 +1,4 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Arcane Technology\1.1\Assemblies\Arcane Technology.dll
+C:\Users\rrmcinv\Desktop\Arcane Technology\Source\obj\Debug\Arcane Technology.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\Arcane Technology\Source\obj\Debug\Arcane Technology.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\Arcane Technology\Source\obj\Debug\Arcane Technology.dll

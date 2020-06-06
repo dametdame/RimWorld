@@ -1,0 +1,8 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Time Control\1.1\Assemblies\Time Control.dll
+C:\Users\rrmcinv\Desktop\Time Control\obj\Debug\Time Control.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\Time Control\obj\Debug\Time Control.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\Time Control\obj\Debug\Time Control.dll
+C:\Users\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Time Control\1.1\Assemblies\Time Control.dll
+C:\Users\rrmcinv\Desktop\Time Control\Source\obj\Debug\Time Control.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\Time Control\Source\obj\Debug\Time Control.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\Time Control\Source\obj\Debug\Time Control.dll

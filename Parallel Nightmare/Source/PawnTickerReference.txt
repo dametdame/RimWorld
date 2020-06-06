@@ -1,0 +1,143 @@
+﻿
+  ********* Reference only ***********
+ 
+ 
+public static class PawnTicker
+{
+    if (DebugSettings.noAnimals && base.Spawned && this.RaceProps.Animal)
+		{
+			this.Destroy(DestroyMode.Vanish);
+			return;
+		}
+		base.Tick();														// No time checks, up to each comp - probably very dangerous; what comps do pawns have?
+																			// All pawns have CompAttachBase as part of BasePawn - no time checks, seems fine
+																			// EggLayer, Milkable, Shearable - no time checks, will use adjusted speed; probably bad
+																			// solution: patch ThingWithComps.Tick();
+
+		if (Find.TickManager.TicksGame % 250 == 0)							// normal time rare tick
+		{
+			this.TickRare();												// updates apparel, inventory, training, heat push
+																			// apparel: absolute values, normal time
+																			// inventory: ticks each item in the inventory, up to the item; means normal time for everything without patches
+																			// training: uses absolute values, normal time
+																			// heat push: probably want this on normal time anyway
+																			// same comp ticks as above but rare
+			
+		}
+		bool suspended = base.Suspended;
+		if (!suspended)
+		{
+			if (base.Spawned)
+			{
+				this.pather.PatherTick();									// ********uses absolute values, normal time, needs a patch********
+			}
+			if (base.Spawned)
+			{
+				this.stances.StanceTrackerTick();							// No time checks
+				this.verbTracker.VerbsTick();								// TENTATIVE - No time checks, needs testing especially with combat extended
+				this.natives.NativeVerbsTick();								// same as above
+			}
+			if (base.Spawned)
+			{
+				this.jobs.JobTrackerTick();									// uses this.pawn.IsHashIntervalTick (normal time w/o patch) for thinktree
+																			// we want this to use adjusted time
+																			// uses absolute ticks for expiry, can maybe patch constructors of Job (set expiry intervals), but do we need to? 
+																			// sample of jobs with expiration (there are a number): FightEnemy, FollowPawn, Berserk, Manhunter, Nuzzle, ManTurrets, ReactToCloseMeleeThreat, StandAndBeSociallyActive
+			}
+			if (base.Spawned)
+			{
+				this.Drawer.DrawTrackerTick();								// Jitter, Footprint, Leaner, Renderer: will use adjusted time
+																			// Breath: uses normal time, will puff breaths more or less based on speed, oh well
+				this.rotationTracker.RotationTrackerTick();					// No time checks
+			}
+			this.health.HealthTick();										// ********Needs patch********
+			if (!this.Dead)
+			{
+				this.mindState.MindStateTick();								// ********uses absolute value for terrain moods, can patch with postfix********
+				this.carryTracker.CarryHandsTick();							// ********ticks carried thing, means adjusted time for carried things, needs patch********
+			}
+		}
+		if (!this.Dead)
+		{
+			this.needs.NeedsTrackerTick();									// uses this.pawn.IsHashIntervalTick (normal time w/o patch)
+																			// we want IsHashIntervalTick to use normal time here
+		}
+		if (!suspended)
+		{
+			if (this.equipment != null)
+			{
+				this.equipment.EquipmentTrackerTick();						// verbs, i think needs to be adjusted time by default (and is)
+			}
+			if (this.apparel != null)
+			{
+				this.apparel.ApparelTrackerTick();							// nudity, locked apparel, also ticks the apparel and its comps... seems fine adjusted (comps pending)
+			}
+			if (this.interactions != null && base.Spawned)
+			{
+				this.interactions.InteractionsTrackerTick();				// uses absolute + IsHashIntervalTick, probably fine to leave
+			}
+			if (this.caller != null)
+			{
+				this.caller.CallTrackerTick();								// fine I think, plays sounds
+			}
+			if (this.skills != null)
+			{
+				this.skills.SkillsTick();									// IsHashIntervalTick for decay & absolute tick for resetting skills for the day
+																			// we want IsHashInterval to be normal time here
+			}
+			if (this.abilities != null)
+			{
+				this.abilities.AbilitiesTick();								// uses adjusted time, i think this is psychic stuff, probably fine on adjusted time
+			}
+			if (this.inventory != null)
+			{
+				this.inventory.InventoryTrackerTick();						// ********ticks everything held at adjusted time, should be normal time, needs patch********
+			}
+			if (this.drafter != null)
+			{
+				this.drafter.DraftControllerTick();							// Absolute game values for normal time, probably fine
+			}
+			if (this.relations != null)
+			{
+				this.relations.RelationsTrackerTick();						// Marriage & relations, uses IsHashIntevalTick
+																			// we want IsHashIntervalTick to be normal time here
+			}
+			if (this.psychicEntropy != null)
+			{
+				this.psychicEntropy.PsychicEntropyTrackerTick();			// uses adjusted time, seems fine
+			}
+			if (this.RaceProps.Humanlike)
+			{
+				this.guest.GuestTrackerTick();								// uses IsHashIntervalTick
+																			// we want IsHashIntervalTick to be normal time here
+			}
+			if (this.royalty != null && ModsConfig.RoyaltyActive)
+			{
+				this.royalty.RoyaltyTrackerTick();							// permit calling troops: absolute ticks, fine
+																			// heir stuff, fine; royaltitle uses IsHashIntervalTick, normal time, fine
+																			// we want IsHashIntervalTick to be normal time here
+			}
+			this.ageTracker.AgeTick();										// ********uses internal counter, needs to be normal time********
+			this.records.RecordsTick();										// uses IsHashIntervalTick
+																			// we don't really care whether IsHashIntervalTick is normal time here
+	}
+}
+
+
+
+Ok, so
+
+We need IsHashIntervalTick to be normal time
+
+Change call frequency:
+	this.ageTracker.AgeTick();
+	this.inventory.InventoryTrackerTick();	
+	this.carryTracker.CarryHandsTick();
+	this.health.HealthTick();
+
+	this.guest.GuestTrackerTick();	
+
+Required patch:
+	this.mindState.MindStateTick();	
+	this.pather.PatherTick()
+	this.jobs.JobTrackerTick();

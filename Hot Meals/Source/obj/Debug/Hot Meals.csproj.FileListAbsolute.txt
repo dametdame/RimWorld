@@ -1,0 +1,5 @@
+C:\Users\rrmcinv\Desktop\Hot Meals\Source\obj\Debug\Hot Meals.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\Hot Meals\Source\obj\Debug\Hot Meals.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Hot Meals\1.1\Assemblies\HotMeals.dll
+C:\Users\rrmcinv\Desktop\Hot Meals\Source\obj\Debug\HotMeals.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Thermodynamics - Hot Meals\1.1\Assemblies\HotMeals.dll

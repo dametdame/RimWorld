@@ -1,0 +1,10 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Techprinting\Source\bin\Debug\Techprinting.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Techprinting\Source\bin\Debug\Techprinting.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Techprinting\Source\obj\Debug\Techprinting.csprojAssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Techprinting\Source\obj\Debug\Techprinting.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Techprinting\1.1\Assemblies\DTechprinting.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Techprinting\Source\obj\Debug\DTechprinting.dll
+C:\Users\rrmcinv\Desktop\Techprinting\1.1\Assemblies\DTechprinting.dll
+C:\Users\rrmcinv\Desktop\Techprinting\Source\obj\Debug\Techprinting.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\Techprinting\Source\obj\Debug\Techprinting.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\Techprinting\Source\obj\Debug\DTechprinting.dll

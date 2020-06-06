@@ -1,0 +1,10 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests and Callings\1.1\Source\obj\Debug\Interests.csprojAssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests and Callings\1.1\Source\obj\Debug\Interests.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests and Callings\1.1\Assemblies\DInterests.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests and Callings\1.1\Source\obj\Debug\Interests.csproj.CopyComplete
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests and Callings\1.1\Source\obj\Debug\DInterests.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests Framework\Assemblies\DInterests.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests Framework\Source\obj\Debug\Interests.csprojAssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests Framework\Source\obj\Debug\Interests.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests Framework\Source\obj\Debug\DInterests.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Interests Framework\1.1\Assemblies\DInterests.dll

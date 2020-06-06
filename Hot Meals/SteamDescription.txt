@@ -1,0 +1,83 @@
+[h1]Overview[/h1]
+Give you a warm feeling? Leave a like!
+[img]https://i.imgur.com/FcAqtoA.png[/img]
+
+[h2]Designed for Rimworld 1.1 [/h2]
+
+Makes the temperature of meals matter, meaning colonists will want their hot meals hot and their cold drinks cold.
+
+[b]Compatible with existing saves.[/b]
+
+Requires Thermodynamics - Core
+Requires Harmony
+
+------------------------------------------------------------------------------------------------------
+[h1]Features[/h1]
+
+(Yes, temperature readouts will change based on whether you're set to C or F)
+
+All food items are separated into one of seven categories:
+[list]
+[*]Hot Meals (e.g.: Simple Meals)
+[*]Cold Meals (e.g.: Ice Cream from VGP Gourmet)
+[*]Hot Drinks (e.g.: Coffee from multiple mods)
+[*]Cold Drinks (e.g.: Beer)
+[*]Lukewarm Meals (e.g.: Nigiri from VGP Gourmet)
+[*]Nonperishables (e.g.: Packaged Survival Meals)
+[*]Edible Raw (e.g.: Agave fruit)
+[/list]
+
+Food will keep track of its temperature, and its heat will gradually diffuse with the surrounding environment.
+
+Each category has an associated ideal temperature. Colonists will be happy to eat food in the right temperature range, and progressively less happy to eat food outside of the ideal range.
+
+So, how do you keep your colonists happy with their food's temperature?
+[list]
+[*]Frozen food (except for Cold Meals) will impose a significant mood penalty
+[*]Cold drinks are good, as long as they're not frozen; your colonists can crack open a cold one!
+[*]Consider using some fridges instead of freezers (except for cold meals; melting ice cream isn't good for anyone).
+[*]Colonists can heat up food that's too cold at a nearby stove (or modded equivalen; can be disabled). This can be done either automatically if they can find a nearby heating appliance, or manually through right-click.
+[*]With microelectronics completed, you can build a microwave, a dedicated appliance that reheats meals at super speed:
+[img=https://i.imgur.com/t6exu5T.png][/img]
+[/list]
+
+
+[h3]Why this mod?[/h3]
+Have you ever eaten a frozen potato?
+
+I have.
+
+------------------------------------------------------------------------------------------------------
+[h2]What about mod support?[/h2]
+Food is categorized dynamically in an attempt to support any food mod. Additionally, the following mods have been tested and are explicitly supported:
+[list][*]VGP Vegetable Garden
+[*]VGP Garden Canning
+[*]VGP Garden Drinks
+[*]VGP Garden Gourmet
+[*]VGP Garden Medicine
+[*]Rimcuisine 2 Core
+[*]Rimcuisine 2 Meals and Munchies Expansion
+[*]Rimcuisine 2 Bottling and Booze Expansion
+[*]Medieval Times (Unofficial Update)
+[*]Vanilla Factions Expanded - Medieval
+[*]I Am Hungry(continued)
+[/list]
+
+If you have a mod with food that isn't behaving as expected, let me know the food name and the right category; I'll add it.
+
+------------------------------------------------------------------------------------------------------
+[h2]Load order[/h2]
+
+Harmony
+Core
+Royalty
+...
+[D] Thermodynamics - Core
+[D] Thermodynamics - Hot Meals
+
+------------------------------------------------------------------------------------------------------
+[h3]Compatible with:[/h3]
+Designed for compatibility.
+
+[h3]Conflicts:[/h3]
+Let me know of any.

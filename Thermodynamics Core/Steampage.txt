@@ -1,0 +1,28 @@
+[h1]Overview[/h1]
+Raise your temperature? Leave a like!
+[img]https://i.imgur.com/FcAqtoA.png[/img]
+
+Core module for my Thermodynamics mods. Doesn't really do anything on its own.
+
+Requires Harmony
+
+------------------------------------------------------------------------------------------------------
+[h1]Features[/h1]
+
+Support for other Thermodynamics mods.
+
+------------------------------------------------------------------------------------------------------
+[h2]Load order[/h2]
+
+Harmony
+Core
+Royalty
+...
+[D] Thermodynamics - Core
+
+------------------------------------------------------------------------------------------------------
+[h3]Compatible with:[/h3]
+Designed for compatibility.
+
+[h3]Conflicts:[/h3]
+Let me know of any.
