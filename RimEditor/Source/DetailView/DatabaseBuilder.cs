@@ -58,6 +58,11 @@ namespace DRimEditor.DetailView
                 sections.Insert(0, newFields.ToList());
                 type = type.BaseType;
             }
+            foreach(var section in sections)
+            {
+                if (section.Count > 0)
+                    section.SortBy(f => f.Name);
+            }
             return sections;
         }
 
@@ -177,7 +182,7 @@ namespace DRimEditor.DetailView
             return helpCategoryDef;
         }
 
-        static ItemDetailDef HelpForDef<T>(T def, CategoryDef category) where T : Def
+        public static ItemDetailDef HelpForDef<T>(T def, CategoryDef category) where T : Def
         {
             var itemDef = new ItemDetailDef();
             itemDef.defName = def.defName + "_"+ category.defName + "_Detail";

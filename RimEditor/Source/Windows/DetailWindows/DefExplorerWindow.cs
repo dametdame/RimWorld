@@ -9,14 +9,13 @@ using DRimEditor.DetailView;
 using DRimEditor.Windows;
 using System.Reflection;
 using HarmonyLib;
+using Verse.Noise;
 
 namespace DRimEditor.DetailView
 {
 
     public class DefExplorerWindow : TabWindow, DefView
     {
-
-        #region Instance Data
 
         protected static List<ModCategory> CachedHelpCategories;
         public ItemDetailDef SelectedItemDef;
@@ -73,10 +72,6 @@ namespace DRimEditor.DetailView
         }
         */
 
-        #endregion
-
-        #region Constructor
-
         public DefExplorerWindow()
         {
             //layer = WindowLayer.GameUI;
@@ -88,11 +83,6 @@ namespace DRimEditor.DetailView
             forcePause = true;
             instance = this;
         }
-
-        #endregion
-
-        #region Category Cache Object
-
         public class ModCategory
         {
             readonly List<CategoryDef> _helpCategories = new List<CategoryDef>();
@@ -167,9 +157,6 @@ namespace DRimEditor.DetailView
             }
         }
 
-        #endregion
-
-        #region Category Cache Control
 
         public override void PreOpen()
         {
@@ -211,11 +198,6 @@ namespace DRimEditor.DetailView
                 }
             }
         }
-
-        #endregion
-
-        #region Filter
-
         private void _filterUpdate()
         {
             // filter after a short delay.
@@ -250,10 +232,6 @@ namespace DRimEditor.DetailView
             _lastFilterString = "";
             Filter();
         }
-
-        #endregion
-
-        #region OTab Rendering
 
         public override void DoWindowContents(Rect rect)
         {
@@ -423,10 +401,6 @@ namespace DRimEditor.DetailView
             GUI.EndGroup();
         }
 
-        #endregion
-
-        #region list rect helper
-
         public enum State
         {
             Expanded,
@@ -448,6 +422,26 @@ namespace DRimEditor.DetailView
             //Recache();
         }
 
+        public void AddDef(CategoryDef cat)
+        {
+            Def newDef = ParseHelper.MakeTypedObject(cat.defType) as Def;
+            string newName = "!`newDefPleaseChange`!";
+            newDef.defName = newName;
+            newDef.label = newName;
+            newDef.description = newName;
+            ParseHelper.AddToDefDatabase(newDef);
+            ProfileManager.AddCommand("".Push().New(cat.defType));
+            ProfileManager.AddCommand("".Push().Pop().Set(new { newDef.defName }).Find(newDef.defName));
+            ProfileManager.AddCommand("".Push().Pop().Set(new { newDef.label }).Find(newDef.label));
+            ProfileManager.AddCommand("".Push().Pop().Set(new { newDef.description }).Find(newDef.description));
+            ProfileManager.AddCommand("".Add().Pop());
+            ItemDetailDef newItem = DatabaseBuilder.HelpForDef(newDef, cat);
+            cat.Add(newItem);
+            newItem.Filter(_filterString);
+            DefDatabase<ItemDetailDef>.Add(newItem);
+            //cat.Recache();
+        }
+
         /// <summary>
         /// Generic method for drawing the squares. 
         /// </summary>
@@ -458,7 +452,7 @@ namespace DRimEditor.DetailView
         /// <param name="state">State of collapsing icon to show</param>
         /// <param name="selected">For leaf entries, is this entry selected?</param>
         /// <returns></returns>
-        public bool DrawEntry(ref Vector2 cur, int nestLevel, Rect view, string label, State state, bool selected = false, ItemDetailDef itemDetailDef = null)
+        public bool DrawEntry(ref Vector2 cur, int nestLevel, Rect view, string label, State state, bool selected = false, ItemDetailDef itemDetailDef = null, CategoryDef cat = null)
         {
             cur.x = nestLevel * EntryIndent;
             float iconOffset = ArrowImageSize.x + 2 * WindowMargin;
@@ -489,11 +483,31 @@ namespace DRimEditor.DetailView
             buttonRect.yMin = cur.y;
             cur.y += height;
             buttonRect.yMax = cur.y;
-            if (itemDetailDef != null && Mouse.IsOver(buttonRect) && Event.current.type == EventType.MouseDown && Event.current.button == 1)
+            if (Mouse.IsOver(buttonRect) && Event.current.type == EventType.MouseDown && Event.current.button == 1)
             {
                 var options = new List<FloatMenuOption>();
-                options.Add(new FloatMenuOption("Delete this, defName: " + itemDetailDef.keyDef.defName, () => DeleteDef(itemDetailDef), MenuOptionPriority.High, null));
+                CategoryDef curCat = null; 
+                if (itemDetailDef != null)
+                {
+                    options.Add(new FloatMenuOption("Delete this, defName: " + itemDetailDef.keyDef.defName, () => DeleteDef(itemDetailDef), MenuOptionPriority.Default, null));
+                    curCat = itemDetailDef.category;
+                }
+                else if (cat != null)
+                {
+                    curCat = cat;
+                }
+
+                if (itemDetailDef != null || cat != null)
+                {
+                    options.Add(new FloatMenuOption("Add new def of type " + curCat.defType.ToString(), () => AddDef(curCat), MenuOptionPriority.High, null));
+                }
+                else
+                {
+                    options.Add(new FloatMenuOption("(nothing to do)", null, null));
+                }
+
                 Find.WindowStack.Add(new FloatMenu(options));
+                Event.current.Use();
             }
             GUI.color = Color.grey;
             Widgets.DrawLineHorizontal(view.xMin, cur.y, view.width);
@@ -521,7 +535,7 @@ namespace DRimEditor.DetailView
         public void DrawCatEntry(ref Vector2 cur, int nestLevel, Rect view, CategoryDef catDef)
         {
             State curState = catDef.Expanded ? State.Expanded : State.Closed;
-            if (DrawEntry(ref cur, nestLevel, view, catDef.LabelCap, curState))
+            if (DrawEntry(ref cur, nestLevel, view, catDef.LabelCap, curState, cat: catDef))
             {
                 catDef.Expanded = !catDef.Expanded;
             }
@@ -535,7 +549,7 @@ namespace DRimEditor.DetailView
                 SelectionScrollPos.y = cur.y;
                 _jump = false;
             }
-            if (DrawEntry(ref cur, nestLevel, view, itemDef.LabelCap, State.Leaf, selected, itemDef))
+            if (DrawEntry(ref cur, nestLevel, view, itemDef.LabelCap, State.Leaf, selected, itemDetailDef: itemDef))
             {
                 SelectedItemDef = itemDef;
             }
@@ -583,8 +597,6 @@ namespace DRimEditor.DetailView
         {
             return null;
         }
-
-        #endregion
 
     }
 

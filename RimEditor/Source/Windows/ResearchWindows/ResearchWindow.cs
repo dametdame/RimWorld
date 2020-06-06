@@ -156,6 +156,7 @@ namespace DRimEditor.Research
 
             _dragging = false;
             closeOnClickedOutside = false;
+            ResearchSelectPanel._instance = new ResearchSelectPanel();
             initialized = true;
         }
 
@@ -205,7 +206,6 @@ namespace DRimEditor.Research
                 )
             );
             Tree.Draw( VisibleRect );
-            ResearchSelectPanel.DrawLabels(VisibleRect);
 
             HandleZoom();
 

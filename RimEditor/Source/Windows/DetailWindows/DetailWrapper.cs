@@ -48,10 +48,13 @@ namespace DRimEditor.DetailView
             {
                 Type parentType = parentObject.GetType();
                 if (typeToFieldDict.ContainsKey(parentType))
+                {
                     fields = typeToFieldDict[parentType];
+                }
                 else
                 {
                     fields = DatabaseBuilder.GetSectionFieldList(parentType);
+
                     typeToFieldDict.Add(parentType, fields);
                 }
             }
@@ -60,6 +63,7 @@ namespace DRimEditor.DetailView
             {
                 if (list.Count > 0)
                 {
+                    
                     sections.Add(new DetailSection(parentObject, list[0].DeclaringType.ToString(), list.ToArray(), this, align, parentDesc));
                 }
             }

@@ -254,7 +254,6 @@ namespace DRimEditor.Research
                 progressBarRect.xMin += progressBarRect.width;
                 GUI.DrawTexture(progressBarRect, BaseContent.WhiteTex);
 
-
                 Highlighted = false;
                 DarkHighlighted = false;
 
@@ -350,6 +349,7 @@ namespace DRimEditor.Research
 
         public void DoClick()
         {
+            Log.Message("DoClick");
             if (Event.current.button == 0)
             {
                 if (ResearchSelectPanel.selected == this)

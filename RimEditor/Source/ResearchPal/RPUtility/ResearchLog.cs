@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace DRimEditor.Research
 {
-    public static class Log
+    public static class ResearchLog
     {
 
         public static void Warning( string msg, params object[] args )

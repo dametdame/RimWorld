@@ -341,7 +341,7 @@ namespace DRimEditor.Research
                     var length    = edge.Length;
                     var neighbour = @in ? edge.In : edge.Out;
                     if ( neighbour.X != x )
-                        Log.Warning( "{0} is not at layer {1}", neighbour, x );
+                        ResearchLog.Warning( "{0} is not at layer {1}", neighbour, x );
 
                     // we only need to loop over positions that might be better for this node.
                     // min = minimum of current position, node position
@@ -484,7 +484,7 @@ namespace DRimEditor.Research
                     // stop infinite recursion with loops of size greater than 2
                     if (depth > 100)
                     {
-                        Log.Error("{0} has more than 100 levels of prerequisites. Is the Research Tree defined as a loop?", false, node);
+                        ResearchLog.Error("{0} has more than 100 levels of prerequisites. Is the Research Tree defined as a loop?", false, node);
                         break;
                     }
                 }
@@ -567,7 +567,7 @@ namespace DRimEditor.Research
                 var redundant = ancestors.Intersect( node.Research.prerequisites );
                 if ( redundant.Any() )
                 {
-                    Log.Warning( "\tredundant prerequisites for {0}: {1}", node.Research.LabelCap,
+                    ResearchLog.Warning( "\tredundant prerequisites for {0}: {1}", node.Research.LabelCap,
                                  string.Join( ", ", redundant.Select( r => r.LabelCap ).ToArray() ) );
                     foreach ( var redundantPrerequisite in redundant )
                         node.Research.prerequisites.Remove( redundantPrerequisite );
@@ -583,7 +583,7 @@ namespace DRimEditor.Research
                     // warn and fix badly configured techlevels
                     if ( node.Research.prerequisites.Any( r => r.techLevel > node.Research.techLevel ) )
                     {
-                        Log.Warning( "\t{0} has a lower techlevel than (one of) it's prerequisites",
+                        ResearchLog.Warning( "\t{0} has a lower techlevel than (one of) it's prerequisites",
                                      node.Research.defName );
                         node.Research.techLevel = node.Research.prerequisites.Max( r => r.techLevel );
 

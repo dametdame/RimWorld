@@ -3,3 +3,6 @@ C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\RimEditor\1.1\Assemb
 C:\Users\rrmcinv\Desktop\RimEditor\Source\obj\Release\RimEditor.csprojAssemblyReference.cache
 C:\Users\rrmcinv\Desktop\RimEditor\Source\obj\Release\RimEditor.csproj.CoreCompileInputs.cache
 C:\Users\rrmcinv\Desktop\RimEditor\Source\obj\Release\RimEditor.dll
+C:\Users\rrmcinv\Desktop\RimWorld\RimEditor\Source\obj\Release\RimEditor.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\RimWorld\RimEditor\Source\obj\Release\RimEditor.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\RimWorld\RimEditor\Source\obj\Release\RimEditor.dll

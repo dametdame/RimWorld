@@ -34,6 +34,12 @@ namespace DRimEditor.DetailView
             }
         }
 
+        public void Add(ItemDetailDef newDef)
+        {
+            _cachedHelpDefs.Add(newDef);
+            _cachedHelpDefs.Sort();
+        }
+
         public bool ShouldDraw { get; set; }
 
         public bool Expanded { get; set; }

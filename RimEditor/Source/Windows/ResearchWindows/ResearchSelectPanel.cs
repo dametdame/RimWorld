@@ -33,10 +33,10 @@ namespace DRimEditor.Research
             _instance = this;
         }
 
-
+        /*
         public static void DrawLabels(Rect visibleRect)
         {
-            /*
+            
             var i = 1;
             foreach (var node in _instance._queue)
             {
@@ -48,11 +48,11 @@ namespace DRimEditor.Research
                 }
 
                 i++;
-            }*/
+            }
 
         }
 
-        /*
+        
         public static void DrawLabel(Rect canvas, Color main, Color background, int label)
         {
             // draw coloured tag
