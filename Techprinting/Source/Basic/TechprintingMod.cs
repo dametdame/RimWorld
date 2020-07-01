@@ -18,7 +18,8 @@ namespace DTechprinting
         {
             this.settings = GetSettings<TechprintingSettings>();
 
-            LongEventHandler.QueueLongEvent(Base.Initialize, "DTechprinting.BuildingDatabase", false, null);
+            if (TechprintingSettings.lateLoad)
+                LongEventHandler.QueueLongEvent(Base.Initialize, "DTechprinting.BuildingDatabase", false, null);
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

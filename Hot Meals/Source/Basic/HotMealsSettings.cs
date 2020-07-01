@@ -20,6 +20,8 @@ namespace DHotMeals
         public static float heatSpeedMult = 1;
         public static bool thawIt = false;
         public static bool useCookingAppliances = true;
+        public static bool multipleHeat = false;
+        public static float searchRadius = 48f;
 
         public override void ExposeData()
         {
@@ -31,6 +33,8 @@ namespace DHotMeals
             Scribe_Values.Look(ref heatSpeedMult, "heatSpeedMult", 1);
             Scribe_Values.Look(ref thawIt, "thawIt", false);
             Scribe_Values.Look(ref useCookingAppliances, "useCookingAppliances", true);
+            Scribe_Values.Look(ref multipleHeat, "multipleHeat", false);
+            Scribe_Values.Look(ref searchRadius, "searchRadius", 48f);
             base.ExposeData();
         }
 
@@ -44,6 +48,16 @@ namespace DHotMeals
 
             ls.ColumnWidth = rect.width * 2.0f / 3.0f;
             ls.Begin(rect);
+            ls.Gap();
+
+            ls.CheckboxLabeled("Multiple pawns can heat at same building", ref multipleHeat, "Pawns won't reserve buildings when they heat food, so multiple pawns will be able to use the same appliance to reheat meals. Default off.");
+            ls.Gap();
+
+            Rect searchRect = ls.GetRect(Text.LineHeight);
+            Rect searchLabelRect = searchRect.LeftPartPixels(300);
+            Rect searchSliderRect = searchRect.RightPartPixels(searchRect.width - 300);
+            Widgets.Label(searchLabelRect, "Heater search radius (default 48)");
+            searchRadius = Widgets.HorizontalSlider(searchSliderRect, searchRadius, 1f, 100f, middleAlignment: false, label: searchRadius.ToString("f0"), leftAlignedLabel: null, rightAlignedLabel: null, roundTo: 1f);
             ls.Gap();
 
             Rect heatRect = ls.GetRect(Text.LineHeight);

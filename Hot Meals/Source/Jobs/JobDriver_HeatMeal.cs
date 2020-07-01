@@ -37,11 +37,18 @@ namespace DHotMeals
                     return comp.curTemp >= comp.targetCookingTemp;
                 return comp.curTemp > 0;
             });
-            yield return Toils_Reserve.Reserve(TargetIndex.C);
-            yield return Toils_Goto.GotoThing(TargetIndex.C, PathEndMode.InteractionCell).FailOnDestroyedOrNull(TargetIndex.C);
-            yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.C, null, false, false);
-            yield return Toils_HeatMeal.HeatMeal().FailOnDespawnedNullOrForbiddenPlacedThings().FailOnCannotTouch(TargetIndex.C, PathEndMode.InteractionCell);
-            yield return Toils_Reserve.Release(TargetIndex.C);
+			if (!HotMealsSettings.multipleHeat)
+			{
+				yield return Toils_Reserve.Reserve(TargetIndex.C);
+				yield return Toils_Goto.GotoThing(TargetIndex.C, PathEndMode.InteractionCell).FailOnDestroyedOrNull(TargetIndex.C);
+				yield return Toils_HeatMeal.HeatMeal().FailOnDespawnedNullOrForbiddenPlacedThings().FailOnCannotTouch(TargetIndex.C, PathEndMode.InteractionCell);
+				yield return Toils_Reserve.Release(TargetIndex.C);
+			}
+            else
+            {
+				yield return Toils_Goto.GotoThing(TargetIndex.C, PathEndMode.Touch).FailOnDestroyedOrNull(TargetIndex.C);
+				yield return Toils_HeatMeal.HeatMeal().FailOnDespawnedNullOrForbiddenPlacedThings().FailOnCannotTouch(TargetIndex.C, PathEndMode.Touch);
+			}
             yield return empty;
             yield break;
         }

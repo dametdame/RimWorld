@@ -14,20 +14,50 @@ namespace DRimEditor
     {
         string label;
         public FileInfo file;
-        List<string> loaded = new List<string>();
+        public List<string> loaded = new List<string>();
         Dictionary<string, string> errored = new Dictionary<string, string>();
+        private Dictionary<string, float> heights = new Dictionary<string, float>();
 
-        public List<string> getLoaded
+        private float cachedHeight = -1f;
+        private float cachedWidth = -1f;
+        public bool heightChanged = true;
+
+        public float GetHeight(float width, bool onlyErrored = false)
         {
-            get
+            setHeights(width, onlyErrored);
+            return cachedHeight;
+        }
+
+        public float CommandHeight(string command, float width)
+        {
+            setHeights(width);
+            if (heights.ContainsKey(command))
+                return heights[command];
+            else
+                return 0f;
+        }
+
+        public void setHeights(float width, bool onlyErrored = false)
+        {
+            if (heightChanged || width != cachedWidth || cachedHeight < 0)
             {
-                return loaded;
+                heights = new Dictionary<string, float>();
+                float height = 0f;
+                foreach (string command in loaded)
+                {
+                    float commandHeight = Text.CalcHeight(Profile.FormatComand(command), width);
+                    heights.SetOrAdd(command, commandHeight);
+                    if (!onlyErrored || errored.ContainsKey(command))
+                        height += commandHeight;
+                }
+                cachedHeight = height;
+                cachedWidth = width;
+                heightChanged = false;
             }
         }
 
         public Profile(FileInfo sourceFile)
         {
-            
             label = sourceFile.Name;
             this.file = sourceFile;
             Load();
@@ -59,10 +89,19 @@ namespace DRimEditor
         public void DeleteCommand(int index)
         {
             loaded.RemoveAt(index);
+            ProfileManager.SetChanged();
         }
+
+        public void DeleteCommand(string command)
+        {
+            loaded.Remove(command);
+            ProfileManager.SetChanged();
+        }
+
         public void AddCommand(string line)
         {
             loaded.Add(line);
+            ProfileManager.SetChanged();
         }
 
         public bool HasError(string line)
@@ -91,13 +130,13 @@ namespace DRimEditor
                     {
                         loaded.Add(line);
                     }
-                }
-                
+                }  
             }
             catch (Exception e)
             {
                 Log.Error("Error loading profile " + label + ", " + e.Message);
             }
+            heightChanged = true;
         }
 
         public void Save()
@@ -120,6 +159,7 @@ namespace DRimEditor
 
         public void Apply()
         {
+            Log.Message("RimEditor: Applying profile " + label);
             Parser.queue.Clear();
             Parser.stack.Clear();
             foreach (string line in loaded)

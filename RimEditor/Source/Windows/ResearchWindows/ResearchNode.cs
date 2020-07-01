@@ -14,8 +14,11 @@ using static DRimEditor.Research.Constants;
 
 namespace DRimEditor.Research
 {
+    [StaticConstructorOnStartup]
     public class ResearchNode : Node
     {
+        public static Texture2D shardTex = ContentFinder<Texture2D>.Get("Things/Item/Special/Techshard/Techshard_c", true);
+
         private static readonly Dictionary<ResearchProjectDef, bool> _buildingPresentCache =
             new Dictionary<ResearchProjectDef, bool>();
 
@@ -134,24 +137,23 @@ namespace DRimEditor.Research
         public void RemovePrereq(ResearchNode rn)
         {
             var path = GetPathTo(rn, _inEdges);
-
             foreach(var edge in path ?? Enumerable.Empty<Edge<Node, Node>>())
             {
-                Tree._edges.Remove(Tree._edges.Find(x => x.In == edge.In && x.Out == edge.Out));
+                //Tree._edges.Remove(Tree._edges.Find(x => x.In == edge.In && x.Out == edge.Out));
+                Tree._edges.Remove(edge);
                 edge.Out._inEdges.Remove(edge);
                 edge.In._outEdges.Remove(edge);
                 if (edge.Out is DummyNode && edge.Out.OutEdges.Count == 0 && edge.Out.InEdges.Count == 0)
                     Tree._nodes.Remove(edge.Out);
             }
-            //_inEdges.Remove(_inEdges.Find(x => x.In == rn));
-            //rn._outEdges.Remove(rn._outEdges.Find(x => x.Out == this));
         }
 
         public void AddPrereq(ResearchNode rn)
         {
-            Tree._edges.Add(new Edge<Node, Node>(rn, this));
-            _inEdges.Add(new Edge<Node, Node>(rn, this));
-            rn._outEdges.Add(new Edge<Node, Node>(rn, this));
+            var newEdge = new Edge<Node, Node>(rn, this);
+            Tree._edges.Add(newEdge);
+            _inEdges.Add(newEdge);
+            rn._outEdges.Add(newEdge);
         }
 
 
@@ -279,8 +281,26 @@ namespace DRimEditor.Research
                 {
                     Text.Anchor = TextAnchor.UpperRight;
                     Text.Font = Research.baseCost > 1000000 ? GameFont.Tiny : GameFont.Small;
-                    Widgets.Label(CostLabelRect, Research.baseCost.ToStringByStyle(ToStringStyle.Integer));
-                    GUI.DrawTexture(CostIconRect, Assets.ResearchIcon, ScaleMode.ScaleToFit);
+                    if (Research.techprintCount == 0)
+                    {
+                        Widgets.Label(CostLabelRect, Research.baseCost.ToStringByStyle(ToStringStyle.Integer));
+                        GUI.DrawTexture(CostIconRect, Assets.ResearchIcon, ScaleMode.ScaleToFit);
+                    }
+                    else
+                    {
+                        int printsNeeded = Research.techprintCount;
+                        string label = printsNeeded.ToString();
+                        Text.Font = GameFont.Tiny;
+                        Widgets.Label(CostLabelRect, label);
+                        GUI.DrawTexture(CostIconRect, shardTex, ScaleMode.ScaleToFit);
+                        if (!notDrawingSelected)
+                        {
+                            Rect selectedCostIconRect = new Rect(CostIconRect.x, CostIconRect.yMax + 2f, CostIconRect.width, CostIconRect.height);
+                            GUI.DrawTexture(selectedCostIconRect, Assets.ResearchIcon, ScaleMode.ScaleToFit);
+                            Rect selectedCostLabelRect = new Rect(CostLabelRect.x, selectedCostIconRect.y, CostLabelRect.width, CostLabelRect.height);
+                            Widgets.Label(selectedCostLabelRect, Research.baseCost.ToStringByStyle(ToStringStyle.Integer));
+                        }
+                    }
                 }
 
                 Text.WordWrap = true;
@@ -349,7 +369,6 @@ namespace DRimEditor.Research
 
         public void DoClick()
         {
-            Log.Message("DoClick");
             if (Event.current.button == 0)
             {
                 if (ResearchSelectPanel.selected == this)
@@ -364,7 +383,7 @@ namespace DRimEditor.Research
             else if (Event.current.button == 1)
             {
                 var options = new List<FloatMenuOption>();
-                options.Add(new FloatMenuOption("Open in Def Explorer", () => ClickHandler(), MenuOptionPriority.High, null));
+                options.Add(new FloatMenuOption("Open in Def Explorer...", () => ClickHandler(), MenuOptionPriority.High, null));
                 if (ResearchSelectPanel.selected != null)
                 {
                     if (ResearchSelectPanel.selected == this)
@@ -410,6 +429,8 @@ namespace DRimEditor.Research
                     options.Add(new FloatMenuOption("(No actions available)", null, MenuOptionPriority.Default, null));
                 }
                 */
+                options.Add(new FloatMenuOption("Set tech level...", () => ResearchProjectEditor.SetTechLevel(this), MenuOptionPriority.Low, null));
+                options.Add(new FloatMenuOption("Set techprint count...", () => ResearchProjectEditor.SetTechprintCount(this), MenuOptionPriority.Low, null));
                 Find.WindowStack.Add(new FloatMenu(options));
                 //Event.current.Use();
             }

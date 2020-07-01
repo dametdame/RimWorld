@@ -16,9 +16,11 @@ namespace DRimEditor.DetailView
 
     public class DefExplorerWindow : TabWindow, DefView
     {
+        public static Dictionary<Type, DetailCategory> detailCategories = new Dictionary<Type, DetailCategory>();
+        public static Dictionary<Def, ItemDetail> itemDetails = new Dictionary<Def, ItemDetail>();
 
-        protected static List<ModCategory> CachedHelpCategories;
-        public ItemDetailDef SelectedItemDef;
+        protected static List<RootCategory> CachedHelpCategories;
+        public ItemDetail SelectedItemDef;
 
         public const float WindowMargin = 6f; // 15 is way too much.
         public const float EntryHeight = 30f;
@@ -83,80 +85,7 @@ namespace DRimEditor.DetailView
             forcePause = true;
             instance = this;
         }
-        public class ModCategory
-        {
-            readonly List<CategoryDef> _helpCategories = new List<CategoryDef>();
-
-            public readonly string ModName;
-
-            public bool Expanded;
-
-            public ModCategory(string modName)
-            {
-                ModName = modName;
-            }
-
-            public List<CategoryDef> HelpCategories
-            {
-                get
-                {
-                    return _helpCategories.OrderBy(a => a.label).ToList();
-                }
-            }
-
-            public bool ShouldDraw
-            {
-                get;
-                set;
-            }
-
-            public bool MatchesFilter(string filter)
-            {
-                return (
-                    (filter == "") ||
-                    (ModName.ToUpper().Contains(filter.ToUpper()))
-                );
-            }
-
-            public bool ThisOrAnyChildMatchesFilter(string filter)
-            {
-                return (
-                    (MatchesFilter(filter)) ||
-                    (HelpCategories.Any(hc => hc.ThisOrAnyChildMatchesFilter(filter)))
-                );
-            }
-
-            public void Filter(string filter)
-            {
-                ShouldDraw = ThisOrAnyChildMatchesFilter(filter);
-                Expanded = (
-                    (filter != "") &&
-                    (ShouldDraw)
-                );
-
-                foreach (CategoryDef hc in HelpCategories)
-                {
-                    hc.Filter(filter, MatchesFilter(filter));
-                }
-                /*
-                ShouldDraw = ThisOrAnyChildMatchesFilter(filter);
-                Expanded = (
-                    (filter != "") &&
-                    (ThisOrAnyChildMatchesFilter(filter))
-                );
-
-                foreach (CategoryDef hc in HelpCategories)
-                {
-                    hc.Filter(filter, MatchesFilter(filter));
-                }*/
-            }
-
-            public void AddCategory(CategoryDef def)
-            {
-                _helpCategories.AddUnique(def);
-            }
-        }
-
+       
 
         public override void PreOpen()
         {
@@ -180,21 +109,21 @@ namespace DRimEditor.DetailView
 
         public static void Recache()
         {
-            CachedHelpCategories = new List<ModCategory>();
-            foreach (var helpCategory in DefDatabase<CategoryDef>.AllDefs)
+            CachedHelpCategories = new List<RootCategory>();
+            foreach (DetailCategory detailCategory in DefExplorerWindow.detailCategories.Values)
             {
                 // parent modcategory does not exist, create it.
-                if (CachedHelpCategories.All(t => t.ModName != helpCategory.ModName))
+                if (CachedHelpCategories.All(t => t.rootName != detailCategory.rootCategoryName))
                 {
-                    var mCat = new ModCategory(helpCategory.ModName);
-                    mCat.AddCategory(helpCategory);
+                    var mCat = new RootCategory(detailCategory.rootCategoryName);
+                    mCat.AddCategory(detailCategory);
                     CachedHelpCategories.Add(mCat);
                 }
                 // add to existing modcategory
                 else
                 {
-                    var mCat = CachedHelpCategories.Find(t => t.ModName == helpCategory.ModName);
-                    mCat.AddCategory(helpCategory);
+                    var mCat = CachedHelpCategories.Find(t => t.rootName == detailCategory.rootCategoryName);
+                    mCat.AddCategory(detailCategory);
                 }
             }
         }
@@ -219,7 +148,7 @@ namespace DRimEditor.DetailView
 
         public void Filter()
         {
-            foreach (ModCategory mc in CachedHelpCategories)
+            foreach (RootCategory mc in CachedHelpCategories)
             {
                 mc.Filter(_filterString);
             }
@@ -271,21 +200,21 @@ namespace DRimEditor.DetailView
 
             Text.Font = GameFont.Medium;
             Text.WordWrap = false;
-            float titleWidth = Text.CalcSize(SelectedItemDef.LabelCap).x;
+            float titleWidth = Text.CalcSize(SelectedItemDef.label).x;
             var titleRect = new Rect(rect.xMin + WindowMargin, rect.yMin + WindowMargin, titleWidth, 60f);
 
            
             
-              if ((SelectedItemDef.keyDef != null) && (SelectedItemDef.keyDef.IconTexture() != null))
+              if ((SelectedItemDef.keyObject != null) && (SelectedItemDef.keyObject is Def keyDef) && (keyDef.IconTexture() != null))
             {
                 var iconRect = new Rect(titleRect.xMin + WindowMargin, rect.yMin + WindowMargin, 60f - 2 * WindowMargin, 60f - 2 * WindowMargin);
                 titleRect.x += 60f;
-                SelectedItemDef.keyDef.DrawColouredIcon(iconRect);
+                keyDef.DrawColouredIcon(iconRect);
             }
 
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(titleRect, SelectedItemDef.LabelCap);
+            Widgets.Label(titleRect, SelectedItemDef.label);
             Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.UpperLeft;
             Text.WordWrap = true;
@@ -362,21 +291,21 @@ namespace DRimEditor.DetailView
                 // Would also require some minor adaptations to the filter methods, but nothing major.
                 // - Fluffy.
                 float leeway = EntryHeight + 10f;
-                foreach (ModCategory mc in CachedHelpCategories.Where(mc => mc.ShouldDraw))
+                foreach (RootCategory mc in CachedHelpCategories.Where(mc => mc.ShouldDraw))
                 {
                     DrawModEntry(ref cur, 0, viewRect, mc);
 
                     cur.x += EntryIndent;
                     if (mc.Expanded)
                     {
-                        foreach (CategoryDef hc in mc.HelpCategories.Where(hc => hc.ShouldDraw))
+                        foreach (DetailCategory hc in mc.DetailCategories.Where(hc => hc.ShouldDraw))
                         {
 
                             DrawCatEntry(ref cur, 1, viewRect, hc);
 
                             if (hc.Expanded)
                             {
-                                foreach (ItemDetailDef idd in hc.ItemDetailDefs.Where(hd => hd.ShouldDraw))
+                                foreach (ItemDetail idd in hc.ItemDetailDefs.Where(hd => hd.ShouldDraw))
                                 {
                                     if ((SelectedItemDef == idd && _jump) || (cur.y + leeway >= SelectionScrollPos.y && cur.y <= SelectionScrollPos.y + outRect.height + 10f))
                                     {
@@ -408,10 +337,10 @@ namespace DRimEditor.DetailView
             Leaf
         }
 
-        public void DeleteDef(ItemDetailDef def)
+        public void DeleteDef(ItemDetail def)
         {
-            ParseHelper.RemoveFromDefDatabase(def.keyDef);
-            string command = "".Remove().Find(def.keyDef);
+            ParseHelper.RemoveFromDefDatabase(def.keyObject);
+            string command = "".Remove().Find(def.keyObject);
             ProfileManager.AddCommand(command);
             if (SelectedItemDef == def)
             {
@@ -422,24 +351,31 @@ namespace DRimEditor.DetailView
             //Recache();
         }
 
-        public void AddDef(CategoryDef cat)
+        public void AddDef(DetailCategory cat)
         {
-            Def newDef = ParseHelper.MakeTypedObject(cat.defType) as Def;
-            string newName = "!`newDefPleaseChange`!";
+            Def newDef = ParseHelper.MakeTypedObject(cat.subclassType) as Def;
+            string newName = "0000NewDefPleaseChange";
             newDef.defName = newName;
             newDef.label = newName;
             newDef.description = newName;
             ParseHelper.AddToDefDatabase(newDef);
-            ProfileManager.AddCommand("".Push().New(cat.defType));
+            ProfileManager.AddCommand("".Push().New(cat.subclassType));
             ProfileManager.AddCommand("".Push().Pop().Set(new { newDef.defName }).Find(newDef.defName));
             ProfileManager.AddCommand("".Push().Pop().Set(new { newDef.label }).Find(newDef.label));
             ProfileManager.AddCommand("".Push().Pop().Set(new { newDef.description }).Find(newDef.description));
             ProfileManager.AddCommand("".Add().Pop());
-            ItemDetailDef newItem = DatabaseBuilder.HelpForDef(newDef, cat);
+            AddNewDefToCat(newDef, cat);
+            //cat.Recache();
+        }
+
+        public void AddNewDefToCat(Def newDef, DetailCategory cat)
+        {
+            ItemDetail newItem = DefDatabaseBuilder.MakeItemDetail(newDef, cat);
             cat.Add(newItem);
             newItem.Filter(_filterString);
-            DefDatabase<ItemDetailDef>.Add(newItem);
-            //cat.Recache();
+            itemDetails.Add(newDef, newItem);
+            if (MainWindow.openWindow == this)
+                SelectedItemDef = newItem;
         }
 
         /// <summary>
@@ -452,7 +388,7 @@ namespace DRimEditor.DetailView
         /// <param name="state">State of collapsing icon to show</param>
         /// <param name="selected">For leaf entries, is this entry selected?</param>
         /// <returns></returns>
-        public bool DrawEntry(ref Vector2 cur, int nestLevel, Rect view, string label, State state, bool selected = false, ItemDetailDef itemDetailDef = null, CategoryDef cat = null)
+        public bool DrawEntry(ref Vector2 cur, int nestLevel, Rect view, string label, State state, bool selected = false, ItemDetail itemDetail = null, DetailCategory cat = null)
         {
             cur.x = nestLevel * EntryIndent;
             float iconOffset = ArrowImageSize.x + 2 * WindowMargin;
@@ -486,20 +422,20 @@ namespace DRimEditor.DetailView
             if (Mouse.IsOver(buttonRect) && Event.current.type == EventType.MouseDown && Event.current.button == 1)
             {
                 var options = new List<FloatMenuOption>();
-                CategoryDef curCat = null; 
-                if (itemDetailDef != null)
+                DetailCategory curCat = null; 
+                if (itemDetail != null && itemDetail.keyObject is Def itemDetailDef)
                 {
-                    options.Add(new FloatMenuOption("Delete this, defName: " + itemDetailDef.keyDef.defName, () => DeleteDef(itemDetailDef), MenuOptionPriority.Default, null));
-                    curCat = itemDetailDef.category;
+                    options.Add(new FloatMenuOption("Delete this, defName: " + itemDetailDef.defName, () => DeleteDef(itemDetail), MenuOptionPriority.Default, null));
+                    curCat = itemDetail.category;
                 }
                 else if (cat != null)
                 {
                     curCat = cat;
                 }
 
-                if (itemDetailDef != null || cat != null)
+                if ((itemDetail != null && itemDetail.keyObject is Def) || (cat != null && typeof(Def).IsAssignableFrom(curCat.subclassType)))
                 {
-                    options.Add(new FloatMenuOption("Add new def of type " + curCat.defType.ToString(), () => AddDef(curCat), MenuOptionPriority.High, null));
+                    options.Add(new FloatMenuOption("Add new def of type " + curCat.subclassType.ToString(), () => AddDef(curCat), MenuOptionPriority.High, null));
                 }
                 else
                 {
@@ -523,25 +459,25 @@ namespace DRimEditor.DetailView
             return Widgets.ButtonInvisible(buttonRect);
         }
 
-        public void DrawModEntry(ref Vector2 cur, int nestLevel, Rect view, ModCategory mc)
+        public void DrawModEntry(ref Vector2 cur, int nestLevel, Rect view, RootCategory mc)
         {
             State curState = mc.Expanded ? State.Expanded : State.Closed;
-            if (DrawEntry(ref cur, nestLevel, view, mc.ModName, curState))
+            if (DrawEntry(ref cur, nestLevel, view, mc.rootName, curState))
             {
                 mc.Expanded = !mc.Expanded;
             }
         }
 
-        public void DrawCatEntry(ref Vector2 cur, int nestLevel, Rect view, CategoryDef catDef)
+        public void DrawCatEntry(ref Vector2 cur, int nestLevel, Rect view, DetailCategory cat)
         {
-            State curState = catDef.Expanded ? State.Expanded : State.Closed;
-            if (DrawEntry(ref cur, nestLevel, view, catDef.LabelCap, curState, cat: catDef))
+            State curState = cat.Expanded ? State.Expanded : State.Closed;
+            if (DrawEntry(ref cur, nestLevel, view, cat.label, curState, cat: cat))
             {
-                catDef.Expanded = !catDef.Expanded;
+                cat.Expanded = !cat.Expanded;
             }
         }
 
-        public void DrawItemEntry(ref Vector2 cur, int nestLevel, Rect view, ItemDetailDef itemDef)
+        public void DrawItemEntry(ref Vector2 cur, int nestLevel, Rect view, ItemDetail itemDef)
         {
             bool selected = SelectedItemDef == itemDef;
             if (selected && _jump)
@@ -549,7 +485,7 @@ namespace DRimEditor.DetailView
                 SelectionScrollPos.y = cur.y;
                 _jump = false;
             }
-            if (DrawEntry(ref cur, nestLevel, view, itemDef.LabelCap, State.Leaf, selected, itemDetailDef: itemDef))
+            if (DrawEntry(ref cur, nestLevel, view, itemDef.label, State.Leaf, selected, itemDetail: itemDef))
             {
                 SelectedItemDef = itemDef;
             }
@@ -569,7 +505,7 @@ namespace DRimEditor.DetailView
             DoJumpTo(def.GetDef());
         }
 
-        public void JumpTo(ItemDetailDef helpDef)
+        public void JumpTo(ItemDetail helpDef)
         {
             if (helpDef == null)
                 return;
@@ -577,25 +513,21 @@ namespace DRimEditor.DetailView
             LongEventHandler.QueueLongEvent(() => DoJumpTo(helpDef), "", false, null);
         }
 
-        public void DoJumpTo(ItemDetailDef helpDef)
+        public void DoJumpTo(ItemDetail helpDef)
         {
             ResetFilter();
             _jump = true;
             SelectedItemDef = helpDef;
-            CategoryDef cat = DefDatabase<CategoryDef>.AllDefsListForReading.First(hc => hc.ItemDetailDefs.Contains(helpDef));
+            //DetailCategory cat = DefDatabase<DetailCategory>.AllDefsListForReading.First(hc => hc.ItemDetailDefs.Contains(helpDef));
+            DetailCategory cat = DefExplorerWindow.detailCategories.First(hc => hc.Value.ItemDetailDefs.Contains(helpDef)).Value;
             cat.Expanded = true;
-            ModCategory mod = CachedHelpCategories.First(mc => mc.HelpCategories.Contains(cat));
+            RootCategory mod = CachedHelpCategories.First(mc => mc.DetailCategories.Contains(cat));
             mod.Expanded = true;
         }
 
-        public bool Accept(ItemDetailDef def)
+        public bool Accept(ItemDetail def)
         {
             return true;
-        }
-
-        public DefView SecondaryView(ItemDetailDef def)
-        {
-            return null;
         }
 
     }

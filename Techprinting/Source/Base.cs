@@ -36,12 +36,15 @@ namespace DTechprinting
 
 		static Base()
 		{
+			if (!TechprintingSettings.lateLoad)
+				Initialize();
 		}
 
 		public static void UpdateAll()
 		{
-			ResearchProjectHelper.SetTechprintRequirements();
-			GenerateAllShards();
+			//ResearchProjectHelper.SetTechprintRequirements();
+			if (TechprintingSettings.lateLoad)
+				GenerateAllShards();
 			MakeThingDictionaries();
 			SetTechshardPrices();
 			UpdateTechshardRecipes();
@@ -60,7 +63,7 @@ namespace DTechprinting
 
 			foreach (ResearchProjectDef rp in DefDatabase<ResearchProjectDef>.AllDefs)
 			{
-				if (rp.techprintCount > 0 && !ResearchProjectHelper.added.Contains(rp) && !ResearchProjectHelper.oldNewMap.Values.Contains(rp))
+				if (rp.techprintCount > 0 && rp.techprintCount < 100 && !ResearchProjectHelper.added.Contains(rp) && !ResearchProjectHelper.oldNewMap.Values.Contains(rp))
 				{
 					rp.techprintCount *= 100;
 				}
@@ -112,28 +115,31 @@ namespace DTechprinting
 
 		public static void MakeThingDictionaries()
 		{
-			var thingList = DefDatabase<ThingDef>.AllDefsListForReading;
 			thingDic = new Dictionary<ThingDef, ResearchProjectDef>();
 			researchDic = new Dictionary<ResearchProjectDef, List<ThingDef>>();
-			foreach (ThingDef thing in thingList)
+
+			foreach (RecipeDef recipe in DefDatabase<RecipeDef>.AllDefsListForReading)
 			{
-				ResearchProjectDef rpd = ThingDefHelper.GetBestResearchProject(thing);
-				if (rpd != null)
+				ResearchProjectDef rpd = ThingDefHelper.GetBestRPDForRecipe(recipe);
+				if (rpd != null && recipe.ProducedThingDef != null)
 				{
 					if (ShardMaker.Techshard(rpd) != null && (rpd.techprintCount > 0 || TechprintingSettings.printAllItems))
 					{
-						List<ThingDef> things;
-						ResearchProjectDef research;
+						ThingDef producedThing = recipe.ProducedThingDef;
 
-						if (!thingDic.TryGetValue(thing, out research))
-							thingDic.Add(thing, rpd);
+						thingDic.SetOrAdd(producedThing, rpd);
+
+						List<ThingDef> things;
 						if (researchDic.TryGetValue(rpd, out things))
-							things.Add(thing);
+							things.Add(producedThing);
 						else
-							researchDic.Add(rpd, new List<ThingDef> { thing });
+							researchDic.Add(rpd, new List<ThingDef> { producedThing });
 					}
 				}
 			}
+
+			GearAssigner.HardAssign(ref thingDic, ref researchDic);
+			GearAssigner.OverrideAssign(ref thingDic, ref researchDic);
 		}
 
 		public static void UpdateTechshardRecipes()

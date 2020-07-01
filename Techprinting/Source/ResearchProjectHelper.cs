@@ -14,36 +14,42 @@ namespace DTechprinting
     {
 		public static Dictionary<ResearchProjectDef, ResearchProjectDef> oldNewMap = new Dictionary<ResearchProjectDef, ResearchProjectDef>();
 		public static List<ResearchProjectDef> added = new List<ResearchProjectDef>();
+		public static Dictionary<string, int> shardCostAssignment = new Dictionary<string, int>();
 
 		public static bool ProjectUnlocksShardable(ResearchProjectDef rpd)
 		{
-			if (GearAssigner.HasHardAssignment(rpd))
+			if (GearAssigner.HasHardAssignment(rpd) || GearAssigner.HasOverrideAssignment(rpd))
 				return true;
 			foreach(RecipeDef recipe in DefDatabase<RecipeDef>.AllDefs)
 			{
+				/*
 				if (recipe.ProducedThingDef == null)
 				{
 					continue;
 				}
 				ResearchProjectDef best = ThingDefHelper.GetBestResearchProject(recipe.ProducedThingDef, true);
+				*/
+				ResearchProjectDef best = ThingDefHelper.GetBestRPDForRecipe(recipe, true);
 				if (best == rpd)
 					return true;
+				
 			}
-			
 			return false;
 		}
 
 		public static bool ProjectHasWeaponApparel(ResearchProjectDef rpd)
 		{
-			if (GearAssigner.HasHardAssignment(rpd))
+			if (GearAssigner.HasHardAssignment(rpd) || GearAssigner.HasOverrideAssignment(rpd))
 				return true;
 			foreach (RecipeDef recipe in DefDatabase<RecipeDef>.AllDefs)
 			{
+				
 				if (recipe.ProducedThingDef == null || (!recipe.ProducedThingDef.IsApparel && !recipe.ProducedThingDef.IsWeapon))
 				{
 					continue;
 				}
-				ResearchProjectDef best = ThingDefHelper.GetBestResearchProject(recipe.ProducedThingDef, true);
+				//ResearchProjectDef best = ThingDefHelper.GetBestResearchProject(recipe.ProducedThingDef, true);
+				ResearchProjectDef best = ThingDefHelper.GetBestRPDForRecipe(recipe, true);
 				if (best == rpd)
 					return true;
 			}
@@ -53,6 +59,15 @@ namespace DTechprinting
 		public static bool InTechRange(ResearchProjectDef rpd)
 		{
 			return rpd.techLevel >= (TechLevel)Mathf.RoundToInt(TechprintingSettings.techLevelToAddPrints);
+		}
+
+		public static void SetTechprintCost(ResearchProjectDef rpd, int cost)
+        {
+			rpd.techprintCount = cost;
+			if (rpd.heldByFactionCategoryTags.NullOrEmpty())
+			{
+				rpd.heldByFactionCategoryTags = new List<string> { "None" };
+			}
 		}
 
 		public static void SetTechprintRequirements()
@@ -66,13 +81,17 @@ namespace DTechprinting
 				{
 					if (TechprintingSettings.weaponsApparelOnly && !ProjectHasWeaponApparel(rpd))
 						continue;
-
-					rpd.techprintCount = TechprintingSettings.numShardsToAdd;
 					newAdd.Add(rpd);
-					if (rpd.heldByFactionCategoryTags.NullOrEmpty())
-					{
-						rpd.heldByFactionCategoryTags = new List<string> { "None" };
-					}
+					SetTechprintCost(rpd, TechprintingSettings.numShardsToAdd);
+				}
+			}
+			foreach (string rpdString in shardCostAssignment.Keys)
+            {
+				ResearchProjectDef rpd = DefDatabase<ResearchProjectDef>.GetNamedSilentFail(rpdString);
+				if (rpd != null)
+				{
+					newAdd.Add(rpd);
+					SetTechprintCost(rpd, shardCostAssignment[rpdString]);
 				}
 			}
 			if (!newAdd.NullOrEmpty())
@@ -125,11 +144,14 @@ namespace DTechprinting
 
 		public static bool ResearchProjectIsBestPrereqForRecipe(RecipeDef recipe, ResearchProjectDef proj)
 		{
+			/*
 			if (recipe.ProducedThingDef == null)
 			{
 				return false;
 			}
 			ResearchProjectDef best = ThingDefHelper.GetBestResearchProject(recipe.ProducedThingDef);
+			*/
+			ResearchProjectDef best = ThingDefHelper.GetBestRPDForRecipe(recipe);
 			return (best == proj);
 		}
 

@@ -24,6 +24,7 @@ namespace DRimEditor.Research
         public UnlockedDef draggingDef = null;
 
         public static List<UnlockedDef> unlockedDefs = new List<UnlockedDef>();
+        public static bool unlockedInit = false;
 
         public static string newName;
 
@@ -78,6 +79,7 @@ namespace DRimEditor.Research
             selected = null;
             newName = null;
             unlockedDefs.Clear();
+            unlockedInit = false;
         }
 
         public static void Select(ResearchNode node)
@@ -85,6 +87,7 @@ namespace DRimEditor.Research
             selected = node;
             newName = node.Research.label;
             unlockedDefs.Clear();
+            unlockedInit = false;
         }
 
 
@@ -104,13 +107,13 @@ namespace DRimEditor.Research
 
             if (selected != null)
             {
-                foreach (var prerequisite in selected.GetPrereqsRecursive())
-                    prerequisite.Highlighted = true;
+                //foreach (var prerequisite in selected.GetPrereqsRecursive())
+                //    prerequisite.Highlighted = true;
                 foreach (var prerequisite in selected.GetPrereqs())
                     prerequisite.DarkHighlighted = true;
 
-                foreach (var child in selected.AllChildren)
-                    child.Highlighted = true;
+               // foreach (var child in selected.AllChildren)
+               //     child.Highlighted = true;
                 foreach (var child in selected.Children)
                     child.DarkHighlighted = true;
 
@@ -124,7 +127,7 @@ namespace DRimEditor.Research
 
                 DoSelectedView(selectedRect);
 
-                if (unlockedDefs.Count == 0)
+                if (!unlockedInit)
                 {
                     InitUnlockedIcons(selected, canvas);
                 }
@@ -241,6 +244,7 @@ namespace DRimEditor.Research
                 currentX = newX;
                 
             }
+            unlockedInit = true;
         }
     }
    

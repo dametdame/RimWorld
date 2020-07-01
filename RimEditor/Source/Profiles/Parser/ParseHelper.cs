@@ -100,7 +100,10 @@ namespace DRimEditor
         {
             Type defDatabase = typeof(DefDatabase<>).MakeGenericType(new Type[] { objType });
             MethodInfo getNamed = AccessTools.Method(defDatabase, "GetNamed");
-            return getNamed.Invoke(null, new object[] { val, true });
+            object result = getNamed.Invoke(null, new object[] { val, true });
+            if (result == null)
+                throw new Exception("Failed to find Def database value for type " + objType + ", val " + val);
+            return result;
         }
 
         public static void AddToDefDatabase(object obj)

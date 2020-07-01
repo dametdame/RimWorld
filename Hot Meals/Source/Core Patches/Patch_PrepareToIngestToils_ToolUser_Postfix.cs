@@ -20,19 +20,14 @@ namespace DHotMeals.Core_Patches
         private static IEnumerable<Toil> Postfix(IEnumerable<Toil> values, JobDriver_Ingest __instance, Toil chewToil)
         {
             LocalTargetInfo food = __instance.job.GetTarget(TargetIndex.A); ;
-            CompDFoodTemperature comp;
             foreach (Toil baseToil in values)
             {
                 if(carryToils.Contains(baseToil) )
                 {
                     carryToils.Remove(baseToil);           
-                    comp = food.Thing.TryGetComp<CompDFoodTemperature>();
-                    if (comp != null)
+                    foreach (Toil toil in HeatMealInjector.Heat(__instance))
                     {
-                        foreach (Toil toil in HeatMealInjector.Heat(__instance, comp))
-                        {
-                            yield return toil;
-                        }
+                        yield return toil;
                     }
                 }
                 yield return baseToil;
@@ -40,15 +35,12 @@ namespace DHotMeals.Core_Patches
 
             if (food.Thing.def.IsDrug)
             {
-                comp = food.Thing.TryGetComp<CompDFoodTemperature>();
-                if (comp != null)
+
+                foreach (Toil toil in HeatMealInjector.Heat(__instance))
                 {
-                    foreach (Toil toil in HeatMealInjector.Heat(__instance, comp))
-                    {
-                        yield return toil;
-                    }
-                    yield return Toils_Ingest.FindAdjacentEatSurface(TargetIndex.B, TargetIndex.A);
+                    yield return toil;
                 }
+                yield return Toils_Ingest.FindAdjacentEatSurface(TargetIndex.B, TargetIndex.A);
             }
             yield break;
         }

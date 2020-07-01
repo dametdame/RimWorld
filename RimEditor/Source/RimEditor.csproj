@@ -19,7 +19,7 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\RimEditor\1.1\Assemblies\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\RimEditor\1.1\Assemblies\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -39,6 +39,10 @@
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DTechprinting">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Techprinting\1.1\Assemblies\DTechprinting.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -300,14 +304,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DetailView\DatabaseBuilder.cs" />
-    <Compile Include="DetailView\Extensions\Unused\BiomeDefExtensions.cs" />
-    <Compile Include="DetailView\Extensions\Unused\BuildableDefExtensions.cs" />
-    <Compile Include="DetailView\Defs\CategoryDef.cs" />
+    <Compile Include="DetailView\Helpers\DatabaseHelper.cs" />
+    <Compile Include="DetailView\DefDatabaseBuilder.cs" />
+    <Compile Include="DetailView\Defs\DetailCategory.cs" />
     <Compile Include="CorePatches\Patch_DrawOptionListing.cs" />
+    <Compile Include="DetailView\Defs\RootCategory.cs" />
     <Compile Include="DetailView\Extensions\DefExtensions.cs" />
-    <Compile Include="DetailView\Extensions\DefStringTriplet.cs" />
-    <Compile Include="DetailView\Extensions\Unused\RecipeDefExtensions.cs" />
     <Compile Include="Profiles\Parser\Extensions.cs" />
     <Compile Include="Profiles\Parser\ParseHelper.cs" />
     <Compile Include="Profiles\Parser\ParseActions.cs" />
@@ -322,9 +324,11 @@
     <Compile Include="ResearchPal\Graph\DummyNode.cs" />
     <Compile Include="ResearchPal\Graph\Edge.cs" />
     <Compile Include="ResearchPal\Graph\Node.cs" />
-    <Compile Include="Windows\DetailWindows\DetailWrapper.cs" />
+    <Compile Include="Windows\DetailWindows\DetailSection\DetailWrapper.cs" />
     <Compile Include="Windows\DetailWindows\FieldDesc.cs" />
-    <Compile Include="Windows\DetailWindows\FieldDescHelper.cs" />
+    <Compile Include="DetailView\Helpers\FieldDescHelper.cs" />
+    <Compile Include="Windows\Dialogs\Dialog_ListSelect.cs" />
+    <Compile Include="Windows\Dialogs\SimpleTextEntryDialog.cs" />
     <Compile Include="Windows\TabWindow.cs" />
     <Compile Include="Windows\ResearchWindows\ResearchNode.cs" />
     <Compile Include="ResearchPal\Graph\Tree.cs" />
@@ -336,15 +340,12 @@
     <Compile Include="ResearchPal\RPUtility\ResearchProjectDef_Extensions.cs" />
     <Compile Include="ResearchPal\RPUtility\ResourceBank.cs" />
     <Compile Include="Windows\DetailWindows\DefView.cs" />
-    <Compile Include="Windows\DetailWindows\DetailSection.cs" />
-    <Compile Include="Windows\DetailWindows\DetailSectionHelper.cs" />
-    <Compile Include="DetailView\Defs\ItemDetailDef.cs" />
+    <Compile Include="Windows\DetailWindows\DetailSection\DetailSection.cs" />
+    <Compile Include="DetailView\Helpers\DetailSectionHelper.cs" />
+    <Compile Include="DetailView\Defs\ItemDetail.cs" />
     <Compile Include="DetailView\Extensions\ListExtensions.cs" />
     <Compile Include="Windows\DetailWindows\DefExplorerWindow.cs" />
     <Compile Include="DetailView\Extensions\ResourceBank.cs" />
-    <Compile Include="DetailView\Extensions\Unused\ResourceProjectDefExtensions.cs" />
-    <Compile Include="Windows\DetailWindows\StringDescTriplet.cs" />
-    <Compile Include="DetailView\Extensions\Unused\ThingDefExtensions.cs" />
     <Compile Include="DetailView\Extensions\Vector3Extensions.cs" />
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

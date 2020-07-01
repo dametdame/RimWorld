@@ -256,12 +256,12 @@ namespace DHotMeals
             {
                 def.tickerType = TickerType.Rare;
             }
-            if(def.thingCategories != null && def.thingCategories.Contains(ThingCategoryDefOf.Foods))
+           /* if(def.thingCategories != null && def.thingCategories.Contains(ThingCategoryDefOf.Foods))
             {
                 ThingCategoryDef FoodRaw = DefDatabase<ThingCategoryDef>.GetNamedSilentFail("FoodRaw");
                 if (FoodRaw != null)
                     HijackDef(def, ThingCategoryDefOf.Foods, FoodRaw);
-            }
+            }*/
 
         }
     }

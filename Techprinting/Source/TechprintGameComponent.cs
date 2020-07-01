@@ -22,16 +22,14 @@ namespace DTechprinting
         {
             base.StartedNewGame();
 
-            Base.MakeThingDictionaries();
-            Base.UpdateTechshardRecipes();
+            Base.UpdateAll();
         }
 
         public override void LoadedGame()
         {
             base.LoadedGame();
 
-            Base.MakeThingDictionaries();
-            Base.UpdateTechshardRecipes();
+            Base.UpdateAll();
         }
     }
 }

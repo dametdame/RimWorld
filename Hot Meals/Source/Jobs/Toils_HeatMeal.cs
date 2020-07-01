@@ -13,8 +13,6 @@ namespace DHotMeals
 {
     public static class Toils_HeatMeal
     {
-		public const float defSearch = 32f;
-
 		public static List<ThingDef> allowedHeaters = new List<ThingDef> { Base.DefOf.DMicrowave};
 
         public static Thing FindPlaceToHeatFood(Thing food, Pawn pawn, float searchRadius = -1f, Thing searchNear = null)
@@ -22,15 +20,9 @@ namespace DHotMeals
 			if (searchNear == null)
 				searchNear = food;
 
-			if (searchRadius == -1f)
+			if (searchRadius < 1f)
 			{
-				if (searchNear.def.ingestible != null)
-				{
-					if (searchNear.def.ingestible.chairSearchRadius > 0)
-						searchRadius = searchNear.def.ingestible.chairSearchRadius;
-				}
-				else
-					searchRadius = defSearch;
+				searchRadius = HotMealsSettings.searchRadius;
 			}
 
 			Predicate<Thing> valid = delegate (Thing m)
@@ -45,11 +37,11 @@ namespace DHotMeals
 				CompPowerTrader compPowerTrader = m.TryGetComp<CompPowerTrader>();
 				if (compPowerTrader != null && !compPowerTrader.PowerOn)
 					return false;
-				return !m.IsForbidden(pawn) && pawn.CanReserve(m, 1, 1, null, false);
+				return !m.IsForbidden(pawn) && (HotMealsSettings.multipleHeat || pawn.CanReserve(m, 1, 1, null, false));
 			};
 
 			Thing result = GenClosest.ClosestThing_Regionwise_ReachablePrioritized(searchNear.PositionHeld, searchNear.MapHeld, ThingRequest.ForGroup(ThingRequestGroup.BuildingArtificial), 
-				PathEndMode.OnCell, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), searchRadius, valid, (thing) => thing.GetStatValue(StatDefOf.WorkTableWorkSpeedFactor));
+				PathEndMode.Touch, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), searchRadius, valid, (thing) => thing.GetStatValue(StatDefOf.WorkTableWorkSpeedFactor));
 			return result;
 		}
 

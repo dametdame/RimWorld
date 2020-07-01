@@ -34,6 +34,8 @@ namespace DRimEditor.Research
 
         public static bool initialized = false;
 
+        public static bool drawDummies = false;
+
         public ResearchWindow()
         {
             closeOnClickedOutside = false;
@@ -176,10 +178,14 @@ namespace DRimEditor.Research
 
         public static void Refresh()
         {
+
+            ResearchNode curSelected = ResearchSelectPanel.selected;
             _treeRect = default;
             ResearchNode.ClearCaches();
             Tree.Clear();
             LongEventHandler.QueueLongEvent(DRimEditor.Research.Tree.Initialize, "DRimEditor.Research.BuildingResearchTree", false, null);
+            if (curSelected != null)
+                LongEventHandler.QueueLongEvent(() => ResearchSelectPanel.selected = Tree._nodes.Find(n => (n is ResearchNode rn) && (rn.Research == curSelected.Research)) as ResearchNode, "", false, null);
             Find.WindowStack.TryRemove(MainWindow.instance);
             //Tree.Initialize();
         }
@@ -216,15 +222,18 @@ namespace DRimEditor.Research
             
             HandleDolly();
 
+            UI.ApplyUIScale();
+
             // reset zoom level
-            ResetZoomLevel(canvas);
             var topRect = new Rect(
                 canvas.xMin,
                 canvas.yMin,
                 canvas.width,
                 TopBarHeight);
             DrawTopBar(topRect);
-            
+
+            ResetZoomLevel(canvas);
+
             HandleClicks();
 
             // cleanup;
@@ -325,9 +334,8 @@ namespace DRimEditor.Research
 
         private void ResetZoomLevel(Rect canvas)
         {
-            // dummies to maintain correct stack size
-            // TODO; figure out how to get actual clipping rects in ApplyZoomLevel();
-            UI.ApplyUIScale();
+            // moved this to main function
+            //UI.ApplyUIScale(); 
             GUI.BeginClip( windowRect );
             GUI.BeginClip(canvas);
             //GUI.BeginClip( new Rect( 0f, 0f, UI.screenWidth, UI.screenHeight ) );
@@ -335,8 +343,8 @@ namespace DRimEditor.Research
 
         private void DrawTopBar( Rect canvas )
         {
-            GUI.EndClip();
-            GUI.EndClip();
+            //GUI.EndClip();
+           // GUI.EndClip();
             Rect searchRect = canvas;
             Rect queueRect  = canvas;
             searchRect.width =  200f;

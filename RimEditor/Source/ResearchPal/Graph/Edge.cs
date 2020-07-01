@@ -138,8 +138,9 @@ namespace DRimEditor.Research
                 }
             }
 
+            
             // draw the end arrow (if not dummy)
-            if ( !IsDummy )
+            if ( ResearchWindow.drawDummies || !IsDummy )
             {
                 var end = new Rect(
                     right.x - 16f,

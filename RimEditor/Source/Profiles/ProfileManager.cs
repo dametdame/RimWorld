@@ -9,6 +9,8 @@ using Verse;
 using UnityEngine;
 using Verse.Noise;
 using UnityEngine.EventSystems;
+using System.Reflection;
+using HarmonyLib;
 
 namespace DRimEditor
 {
@@ -22,6 +24,20 @@ namespace DRimEditor
         public static bool unsavedChanges = false;
 
         public static ProfileManager _instance;
+
+        public static void SetChanged()
+        {
+            unsavedChanges = true;
+            if (activeProfile != null)
+                activeProfile.heightChanged = true;
+        }
+        
+        public static void SetUnchanged()
+        {
+            unsavedChanges = false;
+            if (activeProfile != null)
+                activeProfile.heightChanged = true;
+        }
 
         public static Profile TryGetProfileNamed(string name)
         {
@@ -50,6 +66,21 @@ namespace DRimEditor
             activeProfile.Apply();
             nextActiveProfile = activeProfile;
             currentProfile = activeProfile;
+            if (LoadedModManager.RunningModsListForReading.Any(x => x.Name == "[D] Techprinting"))
+            {
+                UpdateTechprinting();
+            }
+
+            ResourceCounter.ResetDefs();
+            DefDatabase<ThingCategoryDef>.ResolveAllReferences(true, false);
+            DefDatabase<RecipeDef>.ResolveAllReferences(true, false);
+        }
+
+        public static void UpdateTechprinting()
+        {
+            Type techBase = AccessTools.TypeByName("DTechprinting.Base");
+            MethodInfo updateAll = AccessTools.Method(techBase, "UpdateAll");
+            updateAll.Invoke(null, null);
         }
 
         public static void UnapplyActiveProfile()
@@ -73,30 +104,41 @@ namespace DRimEditor
 
         public static void SaveChanges()
         {
-            unsavedChanges = false;
-            currentProfile?.Save();
+            SetUnchanged();
+            activeProfile?.Save();
         }
 
         public static void AddCommand(string command)
         {
-            if (currentProfile == null)
+            if (activeProfile == null)
             {
                 Log.Warning("Tried to add command without open profile");
                 return;
             }
-            unsavedChanges = true;
-            currentProfile.AddCommand(command);
+            SetChanged();
+            activeProfile.AddCommand(command);
         }
 
         public static void DeleteCommand(int index)
         {
-            if(currentProfile == null)
+            if(activeProfile == null)
             {
                 Log.Warning("Tried to delete command without open profile");
                 return;
             }
-            unsavedChanges = true;
-            currentProfile.DeleteCommand(index);
+            SetChanged();
+            activeProfile.DeleteCommand(index);
+        }
+
+        public static void DeleteCommand(string command)
+        {
+            if (activeProfile == null)
+            {
+                Log.Warning("Tried to delete command without open profile");
+                return;
+            }
+            SetChanged();
+            activeProfile.DeleteCommand(command);
         }
 
         public static void MakeNewProfile(string name)
@@ -125,14 +167,14 @@ namespace DRimEditor
             if (profile == null)
                 return;
             currentProfile = profile;
-            unsavedChanges = false;
+            SetUnchanged();
             FileManager.SaveConfig();
         }
 
         public static void UnsetProfile()
         {
             currentProfile = null;
-            unsavedChanges = false;
+            SetUnchanged();
         }
     }
 }

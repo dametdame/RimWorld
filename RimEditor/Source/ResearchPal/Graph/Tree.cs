@@ -106,7 +106,7 @@ namespace DRimEditor.Research
 
             // layout
             MinimizeEdgeLength();
-            SquashOrphans();
+            //SquashOrphans();
             RemoveEmptyRows();
 
             if (!ResearchWindow.initialized)
@@ -175,7 +175,7 @@ namespace DRimEditor.Research
             // move and/or swap nodes to reduce the total edge length
             // perform sweeps of adjacent node reorderings
             var progress  = false;
-            int iteration = 0, burnout = 2, max_iterations = 50;
+            int iteration = 0, burnout = 2, max_iterations = 15;
             while ( ( !progress || burnout > 0 ) && iteration < max_iterations )
             {
                 progress = EdgeLengthSweep_Local( iteration++ );
@@ -568,9 +568,12 @@ namespace DRimEditor.Research
                 if ( redundant.Any() )
                 {
                     ResearchLog.Warning( "\tredundant prerequisites for {0}: {1}", node.Research.LabelCap,
-                                 string.Join( ", ", redundant.Select( r => r.LabelCap ).ToArray() ) );
-                    foreach ( var redundantPrerequisite in redundant )
-                        node.Research.prerequisites.Remove( redundantPrerequisite );
+                                 string.Join( ", ", redundant.Select( r => r.LabelCap ).ToArray() )  + ", fixing, please save");
+                    foreach (var redundantPrerequisite in redundant)
+                    {
+                        ProfileManager.AddCommand("".Find(node.Research).Get(new { node.Research.prerequisites }).Remove().Find(redundantPrerequisite));
+                        node.Research.prerequisites.Remove(redundantPrerequisite);
+                    }
                 }
             }
 
@@ -583,9 +586,11 @@ namespace DRimEditor.Research
                     // warn and fix badly configured techlevels
                     if ( node.Research.prerequisites.Any( r => r.techLevel > node.Research.techLevel ) )
                     {
-                        ResearchLog.Warning( "\t{0} has a lower techlevel than (one of) it's prerequisites",
+                        ResearchLog.Warning( "\t{0} has a lower techlevel than (one of) it's prerequisites, fixing, please save",
                                      node.Research.defName );
-                        node.Research.techLevel = node.Research.prerequisites.Max( r => r.techLevel );
+                        TechLevel maxTech = node.Research.prerequisites.Max(r => r.techLevel);
+                        ProfileManager.AddCommand("".Find(node.Research).Set(new { node.Research.techLevel }).Find(maxTech));
+                        node.Research.techLevel = maxTech;
 
                         // re-enqeue all descendants
                         foreach ( var descendant in node.Descendants.OfType<ResearchNode>() )
@@ -662,14 +667,14 @@ namespace DRimEditor.Research
 
             // up-down sweeps of mean reordering
             var progress  = false;
-            int iteration = 0, burnout = 2, max_iterations = 50;
+            int iteration = 0, burnout = 2, max_iterations = 15;
             while ( ( !progress || burnout > 0 ) && iteration < max_iterations )
             {
                 progress = BarymetricSweep( iteration++ );
                 if ( !progress )
                     burnout--;
             }
-            /*
+            
             // greedy sweep for local optima
             iteration = 0;
             burnout   = 2;
@@ -679,7 +684,7 @@ namespace DRimEditor.Research
                 if ( !progress )
                     burnout--;
             }
-            */
+            
         }
 
         private static bool GreedySweep( int iteration )

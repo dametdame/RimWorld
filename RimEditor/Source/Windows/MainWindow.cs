@@ -11,7 +11,7 @@ using Verse.Noise;
 
 namespace DRimEditor.Windows
 {
-
+    [StaticConstructorOnStartup]
     public class MainWindow : Window
     {
         public static MainWindow instance;
@@ -161,7 +161,7 @@ namespace DRimEditor.Windows
                     if (!DefExplorerWindow.initialized)
                     {
                         Find.WindowStack.TryRemove(instance);
-                        LongEventHandler.QueueLongEvent(DatabaseBuilder.ResolveImpliedDefs, "BuildingRimEditDatabase", false, null);
+                        LongEventHandler.QueueLongEvent(DefDatabaseBuilder.ResolveImpliedDefs, "BuildingRimEditDatabase", false, null);
                         LongEventHandler.QueueLongEvent(() => openWindow = defExplorerWindow, "", false, null);
                         return;
                     }
@@ -182,7 +182,7 @@ namespace DRimEditor.Windows
         public override void DoWindowContents(Rect inRect)
         {
             //Rect researchButtonRect = topButtonsRect.LeftPartPixels(50);
-            bool profileSet = ProfileManager.currentProfile != null;
+            bool profileSet = ProfileManager.activeProfile != null;
             // Top Bar --------------------------------------------------------------------
             Rect backRect = topBarRect.LeftPartPixels(Text.LineHeight + 13f);
             backRect.height = Text.LineHeight + 13f;
@@ -228,17 +228,24 @@ namespace DRimEditor.Windows
 
             
 
-            float topRightBarx = bottomBarRect.xMax - 100f - Margin;
+            float topRightBarx = bottomBarRect.xMax - 25f - Margin;
+            float topRightBarHeight = Text.LineHeight + 13f;
             if (openWindow == researchWindow)
             {
-                Rect refreshRect = new Rect(topRightBarx, profileManagerRect.y, 75f, Text.LineHeight + 13f);
+                float refreshWidth = 75f;
+                topRightBarx -= (refreshWidth);
+                Rect refreshRect = new Rect(topRightBarx, profileManagerRect.y, refreshWidth, topRightBarHeight);
                 bool refresh = Widgets.ButtonText(refreshRect, "Refresh");
-                topRightBarx -= refreshRect.width + 5f;
+                
                 if (refresh)
                 {
                     ResearchWindow.Refresh();
                     return;
                 }
+                float dummiesWidth = 150f;
+                topRightBarx -= (dummiesWidth + 5f);
+                Rect showDummiesRect = new Rect(topRightBarx, profileManagerRect.y, dummiesWidth, topRightBarHeight) ;
+                Widgets.CheckboxLabeled(showDummiesRect, "Show Dummies", ref ResearchWindow.drawDummies);
             }
 
             // Bottom Bar --------------------------------------------------------------------

@@ -21,6 +21,17 @@ namespace DIgnoranceIsBliss.Core_Patches
             {typeof(IncidentWorker_DeepDrillInfestation), TechLevel.Animal },
         };
 
+        public static Dictionary<string, TechLevel> incidentDefNames = new Dictionary<string, TechLevel>
+        {
+            {"CrystalloidShipPartCrash", TechLevel.Ultra },                  // Crystalloids (Rewrite)
+            {"RatkinTunnel_Guerrilla", TechLevel.Industrial },               // NewRatkinPlus
+            {"RatkinTunnel_Thief", TechLevel.Industrial },                   // NewRatkinPlus
+            {"VFEM_BlackKnight", TechLevel.Medieval },                       // Vanilla Factions Expanded - Medieval
+            {"PsychicEmitterActivationSW", TechLevel.Spacer },               // Sparkling Worlds
+            {"WeaponsCachePodCrashSW", TechLevel.Spacer },                   // Sparkling Worlds
+            { "AA_Incident_BlackHive", TechLevel.Spacer },                   // Alpha animals, they're technically animals but OP as hell
+        };
+
         public static Dictionary<TechLevel, List<ResearchProjectDef>> strataDic = new Dictionary<TechLevel, List<ResearchProjectDef>>();
 
         public static TechLevel playerTechLevel
@@ -49,15 +60,7 @@ namespace DIgnoranceIsBliss.Core_Patches
         }
         private static TechLevel cachedTechLevel = TechLevel.Undefined;
 
-        public static Dictionary<string, TechLevel> incidentDefNames = new Dictionary<string, TechLevel>
-        {
-            {"CrystalloidShipPartCrash", TechLevel.Ultra },                  // Crystalloids (Rewrite)
-            {"RatkinTunnel_Guerrilla", TechLevel.Industrial },               // NewRatkinPlus
-            {"RatkinTunnel_Thief", TechLevel.Industrial },                   // NewRatkinPlus
-            {"VFEM_BlackKnight", TechLevel.Medieval },                       // Vanilla Factions Expanded - Medieval
-            {"PsychicEmitterActivationSW", TechLevel.Spacer },               // Sparkling Worlds
-            {"WeaponsCachePodCrashSW", TechLevel.Spacer }                    // Sparkling Worlds
-        };
+        
 
         static IgnoranceBase()
         {
@@ -97,11 +100,11 @@ namespace DIgnoranceIsBliss.Core_Patches
             }
             else if (IgnoranceSettings.usePercentResearched)
             {
+                int numResearched = 0;
                 for (int i = (int)TechLevel.Archotech; i > 0; i--)
                 {
                     if (!strataDic.ContainsKey((TechLevel)i))
-                        continue;
-                    int numResearched = 0;
+                        continue; 
                     foreach (ResearchProjectDef rpd in strataDic[(TechLevel)i])
                     {
                         if (rpd.IsFinished)

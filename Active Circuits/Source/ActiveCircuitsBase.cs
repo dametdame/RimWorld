@@ -43,6 +43,7 @@ namespace DActiveCircuits
 
 		public static void UpdateAllNets(Map map)
 		{
+			netColors = new Dictionary<PowerNet, Color>();
 			foreach (PowerNet net in map.powerNetManager.AllNetsListForReading)
 			{
 				SetNetColor(net);

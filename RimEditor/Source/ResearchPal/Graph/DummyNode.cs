@@ -67,6 +67,12 @@ namespace DRimEditor.Research
             }
         }
 
+        public override void Draw(Rect visibleRect, bool forceDetailedMode = false)
+        {
+            if (ResearchWindow.drawDummies && IsVisible(visibleRect))
+                GUI.DrawTexture(Rect, Assets.Button);
+        }
+
         public override bool  Completed   => OutNodes.FirstOrDefault()?.Completed   ?? false;
         public override bool  Available   => OutNodes.FirstOrDefault()?.Available   ?? false;
         public override bool  Highlighted => OutNodes.FirstOrDefault()?.Highlighted ?? false;

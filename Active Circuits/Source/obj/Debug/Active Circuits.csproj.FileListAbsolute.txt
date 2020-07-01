@@ -2,3 +2,6 @@ C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ActiveCircuits\1.1\A
 C:\Users\rrmcinv\Desktop\Active Circuits\Source\obj\Debug\Active Circuits.csprojAssemblyReference.cache
 C:\Users\rrmcinv\Desktop\Active Circuits\Source\obj\Debug\Active Circuits.csproj.CoreCompileInputs.cache
 C:\Users\rrmcinv\Desktop\Active Circuits\Source\obj\Debug\Active Circuits.dll
+C:\Users\rrmcinv\Desktop\RimWorld\Active Circuits\Source\obj\Debug\Active Circuits.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Active Circuits\Source\obj\Debug\Active Circuits.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Active Circuits\Source\obj\Debug\Active Circuits.dll

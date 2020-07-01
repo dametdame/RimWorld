@@ -12,6 +12,9 @@ namespace Throwaway
     [StaticConstructorOnStartup]
     public static class Base
     {
+		public static Dictionary<ThingDef, ResearchProjectDef>  thingDic = new Dictionary<ThingDef, ResearchProjectDef>();
+		public static Dictionary<ResearchProjectDef, List<ThingDef>>  researchDic = new Dictionary<ResearchProjectDef, List<ThingDef>>();
+
 
         static Base()
         {
@@ -26,12 +29,31 @@ namespace Throwaway
 				}
 			}
 
+			foreach (RecipeDef recipe in DefDatabase<RecipeDef>.AllDefsListForReading)
+			{
+				ResearchProjectDef rpd = DArcaneTechnology.Base.GetBestRPDForRecipe(recipe);
+				if (rpd != null && recipe.ProducedThingDef != null)
+				{
+					ThingDef producedThing = recipe.ProducedThingDef;
+
+					thingDic.SetOrAdd(producedThing, rpd);
+
+					List<ThingDef> things;
+					if (researchDic.TryGetValue(rpd, out things))
+						things.Add(producedThing);
+					else
+						researchDic.Add(rpd, new List<ThingDef> { producedThing });
+				}
+			}
+
+			GearAssigner.HardAssign(ref thingDic, ref researchDic);
+			
 			using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\unassignedgear.csv"))
 			{
 				var thingList = DefDatabase<ThingDef>.AllDefsListForReading;
 				foreach (ThingDef thing in thingList)
 				{
-					ResearchProjectDef rpd = GetBestResearchProject(thing);
+					ResearchProjectDef rpd = thingDic.TryGetValue(thing);
 					if ((thing.IsWeapon || thing.IsApparel) && rpd == null)
 					{
 						file.WriteLine(thing.defName + "," + thing.label + "," + thing.modContentPack);
@@ -39,55 +61,10 @@ namespace Throwaway
 				
 				}
 			}
-
+			
 		}
 
 
-		public static ResearchProjectDef GetBestResearchProject(ThingDef thing)
-		{
-			if (thing.category == ThingCategory.Building || !(thing.IsWeapon || thing.IsApparel))
-				return null;
-
-			var rm = thing.recipeMaker;
-			if (rm != null)
-			{
-				if (rm.researchPrerequisite != null)
-				{
-					return rm.researchPrerequisite;
-				}
-				if (rm.researchPrerequisites != null && rm.researchPrerequisites.Count > 0)
-				{
-					return rm.researchPrerequisites[0];
-				}
-				if (rm.recipeUsers != null)
-				{
-					float lowestSpeed = 99999f;
-					TechLevel lowestTech = TechLevel.Archotech;
-					ThingDef bestThing = null;
-					foreach (ThingDef user in rm.recipeUsers)
-					{
-						if (user.researchPrerequisites != null && user.researchPrerequisites.Count > 0)
-						{
-							float workRate = user.GetStatValueAbstract(StatDefOf.WorkTableWorkSpeedFactor);
-							if (workRate <= lowestSpeed && user.researchPrerequisites[0].techLevel <= lowestTech)
-							{
-								bestThing = user;
-								lowestSpeed = workRate;
-								lowestTech = user.researchPrerequisites[0].techLevel;
-							}
-						}
-						else
-							return null;
-					}
-					if (bestThing != null)
-						return bestThing.researchPrerequisites[0];
-				}
-			}
-			ResearchProjectDef rpd;
-			if (GearAssigner.GetHardAssignment(thing, out rpd))
-				return rpd;
-			return null;
-		}
 
 	}
 }

@@ -43,8 +43,6 @@ namespace DRimEditor.DetailView
 
         public Type[] typeChildren;
 
-        public string command;
-
         public FieldDesc parentDesc;
         public List<DetailWrapper> childDetailWrappers;
         public List<object> directEditableChildren;
@@ -159,7 +157,7 @@ namespace DRimEditor.DetailView
 
         }
 
-        public void AddCommand(string childstr = null)
+        public void AddCommand(string command, string childstr = null)
         {
             string toAdd = command;
 
@@ -182,7 +180,7 @@ namespace DRimEditor.DetailView
                     }
                     else
                     {
-                        GenerateFromCommand(parent, ref prepend);
+                        GenerateFromCommand(parentDesc.childType, parent, ref prepend);
                         toAdd = prepend + ":" + toAdd;
                     }
                 }
@@ -201,7 +199,7 @@ namespace DRimEditor.DetailView
             command = null;
         }
 
-        public bool TryMakeNew(Type type, bool final = true)
+        public bool TryMakeNew(Type type)
         {
             if (!CanMakeNew(type))
             {
@@ -209,12 +207,12 @@ namespace DRimEditor.DetailView
                 Reset();
                 return false;
             }
-            
+
             object newObj = Activator.CreateInstance(type, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, null, null);
-            return TrySetValue(newObj, final); // will set command
+            return TrySetValue(newObj); // will set command
         }
 
-        public bool TryDelete(bool final = true)
+        public bool TryDelete()
         {
             if (IsDirectEditable(field.FieldType) || currentVal == null)
             {
@@ -222,13 +220,17 @@ namespace DRimEditor.DetailView
                 Reset();
                 return false;
             }
-            this.childDetailWrappers = null;
-            this.directEditableChildren = null;
-            this.expanded = false;
-            return TrySetValue(null, final);
+            bool success = TrySetValue(null);
+            if (success)
+            {
+                this.childDetailWrappers = null;
+                this.directEditableChildren = null;
+                this.expanded = false;
+            }
+            return success;
         }
 
-        public bool TryRemoveIndirect(DetailWrapper childSection, bool final = true)
+        public bool TryRemoveIndirect(DetailWrapper childSection)
         {
             if (!IsEnumerable(field.FieldType))
             {
@@ -245,10 +247,9 @@ namespace DRimEditor.DetailView
             object targetObj = childSection.parentObject; // of childType
 
             // make command, have to compare directly editable field values and hope we get the right object
-            command = "".Get(field).Remove();
-            GenerateFromCommand(targetObj, ref command);
-            if (final)
-                AddCommand();
+            string command = "".Get(field).Remove();
+            GenerateFromCommand(childType , targetObj, ref command);
+            AddCommand(command);
             Type collectionType = field.FieldType;
             MethodInfo remove = AccessTools.Method(collectionType, "Remove");
             remove.Invoke(currentVal, new object[] { targetObj });
@@ -256,7 +257,7 @@ namespace DRimEditor.DetailView
             return true;
         }
 
-        public bool TryRemoveDirect(object obj, bool final = true) 
+        public bool TryRemoveDirect(object obj) 
         {
             if (!IsEnumerable(field.FieldType))
             {
@@ -264,9 +265,8 @@ namespace DRimEditor.DetailView
                 Reset();
                 return false;
             }
-            command = "".Get(field).Remove().Find(obj);
-            if (final)
-                AddCommand();
+            string command = "".Get(field).Remove().Find(obj);
+            AddCommand(command);
             Type collectionType = field.FieldType;
             MethodInfo remove = AccessTools.Method(collectionType, "Remove");
             remove.Invoke(currentVal, new object[] { obj });
@@ -275,7 +275,7 @@ namespace DRimEditor.DetailView
             return true;
         }
 
-        public bool TryAddNewDirect(object obj, bool final = true)
+        public bool TryAddNewDirect(object obj)
         {
             if (!IsEnumerable(field.FieldType))
             {
@@ -283,9 +283,8 @@ namespace DRimEditor.DetailView
                 Reset();
                 return false;
             }
-            command = "".Get(field).Add().Find(obj);
-            if (final)
-                AddCommand();
+            string command = "".Get(field).Add().Find(obj);
+            AddCommand(command);
             Type collectionType = field.FieldType;
             MethodInfo add = AccessTools.Method(collectionType, "Add");
             add.Invoke(currentVal, new object[] { obj });
@@ -294,7 +293,7 @@ namespace DRimEditor.DetailView
             return true;
         }
 
-        public bool TryAddNewIndirect(bool final = true)
+        public bool TryAddNewIndirect()
         {
             if (!IsEnumerable(field.FieldType))
             {
@@ -316,13 +315,12 @@ namespace DRimEditor.DetailView
             DetailWrapper details = new DetailWrapper(newObj, null, true, this);
             childDetailWrappers.Add(details);
 
-            command = "".Get(field).Add().New(childType);
-            if (final)
-                AddCommand();
+            string command = "".Get(field).Add().New(childType);
+            AddCommand(command);
             return true;
         }
 
-        public bool TrySetValue(object obj, bool final = true)
+        public bool TrySetValue(object obj)
         {
             if (obj is string stringObj)
             {
@@ -351,9 +349,8 @@ namespace DRimEditor.DetailView
                         return false;
                     }
                 }
-                command = MakeSetCommand(newVal);
-                if (final)
-                    AddCommand();
+                string command = MakeSetCommand(newVal);
+                AddCommand(command);
                 field.SetValue(parent, newVal);
                 Reset();
                 return true;
@@ -366,15 +363,24 @@ namespace DRimEditor.DetailView
                     Reset();
                     return false;
                 }
-                command = MakeSetCommand(obj);
-                if (final)
-                    AddCommand();
-                field.SetValue(parent, obj);
-                Reset();
+                string command = MakeSetCommand(obj);
+                AddCommand(command);
+                bool refreshResearch = false;
                 if (parent is ResearchProjectDef)
                 {
-                    ResearchWindow.Refresh();
+                    if (obj is TechLevel tl)
+                    {
+                        if (!Research.Tree.RelevantTechLevels.Contains(tl))
+                        {
+                            refreshResearch = true;
+                        }
+                    }
+
                 }
+                field.SetValue(parent, obj);
+                Reset();
+                if (refreshResearch)
+                    ResearchWindow.Refresh();
                 return true;
             }
         }   
@@ -452,7 +458,7 @@ namespace DRimEditor.DetailView
         {
             if (!foundTypeChildren)
             {
-                typeChildren = DatabaseBuilder.AllTypeSubclasses(field.FieldType);
+                typeChildren = DatabaseHelper.AllTypeSubclasses(field.FieldType);
                 hasTypeChildren = typeChildren != null && typeChildren.Count() > 0;
                 foundTypeChildren = true;
 
@@ -485,7 +491,7 @@ namespace DRimEditor.DetailView
                         bool add = Widgets.ButtonText(changeRect, "+");
                         if (add)
                         {
-                            TryMakeNew(field.FieldType, true);
+                            TryMakeNew(field.FieldType);
                         }
                     }
                 }
@@ -495,7 +501,7 @@ namespace DRimEditor.DetailView
                 bool delete = Widgets.ButtonText(changeRect, "-");
                 if (delete)
                 {
-                    TryDelete(true);
+                    TryDelete();
                 }
             }
             cur.x += lineHeight + 2f;
@@ -508,7 +514,7 @@ namespace DRimEditor.DetailView
             float arrowSize = lineHeight / 2f;
             
 
-            if (currentVal != null && childrenHaveDirectChildren)
+            if (currentVal != null) //&& childrenHaveDirectChildren)
             {
                 Rect expandRect = new Rect(cur.x + valueRect.width, cur.y + arrowSize / 2f, arrowSize, arrowSize);
                 bool expand = Widgets.ButtonImage(expandRect, expanded ? ResourceBank.Icon.HelpMenuArrowDown : ResourceBank.Icon.HelpMenuArrowRight);
@@ -607,7 +613,7 @@ namespace DRimEditor.DetailView
                         bool delete = Widgets.ButtonText(changeRect, "-");
                         if (delete)
                         {
-                            if (TryRemoveDirect(child, true))
+                            if (TryRemoveDirect(child))
                             {
                                 break;
                             }
@@ -649,7 +655,7 @@ namespace DRimEditor.DetailView
                         bool delete = Widgets.ButtonText(changeRect, "-");
                         if (delete)
                         {
-                            if (TryRemoveIndirect(child, true))
+                            if (TryRemoveIndirect(child))
                             {
                                 break;
                             }
@@ -685,7 +691,7 @@ namespace DRimEditor.DetailView
                         bool add = Widgets.ButtonText(detailAddRect, "+");
                         if (add)
                         {
-                            TryAddNewIndirect(true);
+                            TryAddNewIndirect();
                         }
                         cur.y += lineHeight;
                     }

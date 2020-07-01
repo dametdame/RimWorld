@@ -20,7 +20,13 @@ namespace DTimeControl.Core_Patches.JobTracker_Patches
         {
             if (TimeControlBase.partialTick < 1.0 
                 && (
-                    (TimeControlSettings.scalePawns && !(__instance is JobDriver_TendPatient) && TimeControlSettings.slowWork) 
+                    (TimeControlSettings.scalePawns 
+                        && !(__instance is JobDriver_TendPatient 
+                                // A RimWorld of Magic
+                                || __instance.GetType().Name == "TMJobDriver_CastAbilityVerb" 
+                                || __instance.GetType().Name == "TMJobDriver_CastAbilitySelf" 
+                                || __instance.GetType().Name == "JobDriver_GotoAndCast") 
+                        && TimeControlSettings.slowWork) 
                     || (__instance is JobDriver_ChatWithPrisoner || __instance is JobDriver_Tame)
                     ))
                 return false;

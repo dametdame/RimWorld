@@ -1,0 +1,4 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\SkillPoints\1.1\Assemblies\SkillPoints.dll
+C:\Users\rrmcinv\Desktop\RimWorld\SkillPoints\obj\Debug\SkillPoints.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\RimWorld\SkillPoints\obj\Debug\SkillPoints.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\RimWorld\SkillPoints\obj\Debug\SkillPoints.dll

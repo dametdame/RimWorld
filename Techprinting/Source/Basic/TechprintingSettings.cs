@@ -27,6 +27,7 @@ namespace DTechprinting
         public static bool weaponsApparelOnly = true;
         public static int numShardsToAdd = 100;
         public static bool splitProjects = false;
+        public static bool lateLoad = true;
 
         public override void ExposeData()
         {
@@ -42,6 +43,7 @@ namespace DTechprinting
             Scribe_Values.Look(ref weaponsApparelOnly, "weaponsApparelOnly", true);
             Scribe_Values.Look(ref numShardsToAdd, "numShardToAdd", 100);
             Scribe_Values.Look(ref splitProjects, "splitProjects", false);
+            Scribe_Values.Look(ref lateLoad, "lateLoad", true);
             base.ExposeData();
         }
 
@@ -75,6 +77,8 @@ namespace DTechprinting
             ls.Begin(contents);
             ls.Gap();
 
+            ls.CheckboxLabeled("Generate shard defs late (recommended)", ref lateLoad, "Generates defs as late as possible, and any missing defs on game load. Recommended unless you run into hash collisions, like with PawnMorpher");
+            ls.GapLine();
 
             Rect yieldRect = ls.GetRect(Text.LineHeight);
             Rect yieldLabelRect = yieldRect.LeftPartPixels(300);

@@ -17,20 +17,19 @@ namespace DRimEditor.DetailView
         /// Handles jumping the GUI to a specific helpDef
         /// </summary>
         /// <param name="def"></param>
-        void JumpTo(ItemDetailDef def);
+        void JumpTo(ItemDetail def);
 
         /// <summary>
         /// Does this view accept links to this helpDef
         /// </summary>
         /// <param name="def"></param>
         /// <returns></returns>
-        bool Accept(ItemDetailDef def);
+        bool Accept(ItemDetail def);
 
         /// <summary>
         /// What other view should links be redirected to. Only called when Accept() returns false.
         /// </summary>
         /// <param name="def"></param>
         /// <returns></returns>
-        DefView SecondaryView(ItemDetailDef def);
     }
 }

@@ -8,3 +8,6 @@ C:\Users\rrmcinv\Desktop\Techprinting\1.1\Assemblies\DTechprinting.dll
 C:\Users\rrmcinv\Desktop\Techprinting\Source\obj\Debug\Techprinting.csprojAssemblyReference.cache
 C:\Users\rrmcinv\Desktop\Techprinting\Source\obj\Debug\Techprinting.csproj.CoreCompileInputs.cache
 C:\Users\rrmcinv\Desktop\Techprinting\Source\obj\Debug\DTechprinting.dll
+C:\Users\rrmcinv\Desktop\RimWorld\Techprinting\Source\obj\Debug\Techprinting.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Techprinting\Source\obj\Debug\Techprinting.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Techprinting\Source\obj\Debug\DTechprinting.dll

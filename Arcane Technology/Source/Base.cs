@@ -36,7 +36,7 @@ namespace DArcaneTechnology
 				cachedTechLevel = value;
 				if (flag)
 				{
-
+					// This is the first set, but I don't remember what I intended to do here
 				}
 			}
 		}
@@ -63,75 +63,78 @@ namespace DArcaneTechnology
 
 		public static void MakeDictionaries()
 		{
-			var thingList = DefDatabase<ThingDef>.AllDefsListForReading;
 			thingDic = new Dictionary<ThingDef, ResearchProjectDef>();
 			researchDic = new Dictionary<ResearchProjectDef, List<ThingDef>>();
-				foreach (ThingDef thing in thingList)
+
+			foreach (RecipeDef recipe in DefDatabase<RecipeDef>.AllDefsListForReading)
+			{
+				ResearchProjectDef rpd = GetBestRPDForRecipe(recipe);
+				if (rpd != null && recipe.ProducedThingDef != null)
 				{
-					ResearchProjectDef rpd = GetBestResearchProject(thing);
-					if (rpd != null)
-					{
-						CompProperties_DArcane comp = thing.GetCompProperties<CompProperties_DArcane>();
-						if (comp == null)
-							thing.comps.Add(new CompProperties_DArcane(rpd));
+					ThingDef producedThing = recipe.ProducedThingDef;
 
-						List<ThingDef> things;
+					CompProperties_DArcane comp = producedThing.GetCompProperties<CompProperties_DArcane>();
+					if (comp == null)
+						producedThing.comps.Add(new CompProperties_DArcane(rpd));				
+					
+					thingDic.SetOrAdd(producedThing, rpd);
 
-						thingDic.SetOrAdd(thing, rpd);
-						if (researchDic.TryGetValue(rpd, out things))
-							things.Add(thing);
-						else
-							researchDic.Add(rpd, new List<ThingDef> { thing });
-					}
+					List<ThingDef> things;
+					if (researchDic.TryGetValue(rpd, out things))
+						things.Add(producedThing);
+					else
+						researchDic.Add(rpd, new List<ThingDef> { producedThing });				
 				}
+			}
+
+			GearAssigner.HardAssign(ref thingDic, ref researchDic);
+			GearAssigner.OverrideAssign(ref thingDic, ref researchDic);
 		}
 
-		public static ResearchProjectDef GetBestResearchProject(ThingDef thing)
+		public static ResearchProjectDef GetBestRPDForRecipe(RecipeDef recipe)
 		{
+			ThingDef thing = recipe.ProducedThingDef;
+			if (thing == null)
+			{
+				return null;
+			}
 			ResearchProjectDef overrideRPD;
 			if (GearAssigner.GetOverrideAssignment(thing, out overrideRPD))
 				return overrideRPD;
 			if (thing.category == ThingCategory.Building || !(thing.IsWeapon || thing.IsApparel))
 				return null;
-			
-			var rm = thing.recipeMaker;
-			if (rm != null)
+
+			if (recipe.researchPrerequisite != null)
 			{
-				if (rm.researchPrerequisite != null)
-				{
-					return rm.researchPrerequisite;
-				}
-				if (rm.researchPrerequisites != null && rm.researchPrerequisites.Count > 0)
-				{
-					return rm.researchPrerequisites[0];
-				}
-				if (rm.recipeUsers != null)
-				{
-					float lowestSpeed = 99999f;
-					TechLevel lowestTech = TechLevel.Archotech;
-					ThingDef bestThing = null;
-					foreach (ThingDef user in rm.recipeUsers)
-					{
-						if (user.researchPrerequisites != null && user.researchPrerequisites.Count > 0)
-						{
-							float workRate = user.GetStatValueAbstract(StatDefOf.WorkTableWorkSpeedFactor);
-							if (workRate <= lowestSpeed && user.researchPrerequisites[0].techLevel <= lowestTech)
-							{
-								bestThing = user;
-								lowestSpeed = workRate;
-								lowestTech = user.researchPrerequisites[0].techLevel;
-							}
-						}
-						else
-							return null;
-					}
-					if (bestThing != null)
-					return bestThing.researchPrerequisites[0];
-				}
+				return recipe.researchPrerequisite;
 			}
-			ResearchProjectDef rpd;
-			if (GearAssigner.GetHardAssignment(thing, out rpd))
-				return rpd;
+			if (recipe.researchPrerequisites != null && recipe.researchPrerequisites.Count > 0)
+			{
+				return recipe.researchPrerequisites[0];
+			}
+			if (recipe.recipeUsers != null)
+			{
+				float lowestSpeed = 99999f;
+				TechLevel lowestTech = TechLevel.Archotech;
+				ThingDef bestThing = null;
+				foreach (ThingDef user in recipe.recipeUsers)
+				{
+					if (user.researchPrerequisites != null && user.researchPrerequisites.Count > 0)
+					{
+						float workRate = user.GetStatValueAbstract(StatDefOf.WorkTableWorkSpeedFactor);
+						if (workRate <= lowestSpeed && user.researchPrerequisites[0].techLevel <= lowestTech)
+						{
+							bestThing = user;
+							lowestSpeed = workRate;
+							lowestTech = user.researchPrerequisites[0].techLevel;
+						}
+					}
+					else
+						return null;
+				}
+				if (bestThing != null)
+					return bestThing.researchPrerequisites[0];
+			}
 			return null;
 		}
 
@@ -184,11 +187,11 @@ namespace DArcaneTechnology
 			}
 			else if (ArcaneTechnologySettings.usePercentResearched)
 			{
+				int numResearched = 0;
 				for (int i = (int)TechLevel.Archotech; i > 0; i--)
 				{
 					if (!strataDic.ContainsKey((TechLevel)i))
-						continue;
-					int numResearched = 0;
+						continue;					
 					foreach (ResearchProjectDef rpd in strataDic[(TechLevel)i])
 					{
 						if (rpd.IsFinished)

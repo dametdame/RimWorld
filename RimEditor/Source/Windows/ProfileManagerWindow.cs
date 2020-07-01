@@ -161,19 +161,40 @@ namespace DRimEditor.Windows
             Rect nextApplyRect = new Rect(canvas.x, labelRect.yMax + 4f, canvas.width, Text.LineHeight);
             Widgets.Label(nextApplyRect, "Profile to be applied next startup: " + (ProfileManager.nextActiveProfile?.ToString() ?? "-"));
             Rect examineRect = new Rect(canvas.x, nextApplyRect.yMax + 4f, canvas.width, Text.LineHeight);
-            Widgets.Label(examineRect, "Currently editing: " + (ProfileManager.currentProfile?.ToString() ?? "-") + (ProfileManager.unsavedChanges ? " (unsaved changes)" : ""));
+            Widgets.Label(examineRect, "Currently viewing: " + (ProfileManager.currentProfile?.ToString() ?? "-") + (ProfileManager.unsavedChanges ? " (unsaved changes)" : ""));
 
             bool canApplyNextProfile = ProfileManager.currentProfile != null && ProfileManager.currentProfile != ProfileManager.nextActiveProfile;
             bool canUnapplyNextProfile = ProfileManager.nextActiveProfile != null;
 
             Rect applyRect = new Rect(canvas.x, examineRect.yMax + 4f, 200f, Text.LineHeight);
-            bool applyClicked = Widgets.ButtonText(applyRect, "Apply Current", drawBackground: canApplyNextProfile, doMouseoverSound: canApplyNextProfile, textColor: canApplyNextProfile ? Color.white : Color.grey, active: canApplyNextProfile);
+            bool applyClicked = Widgets.ButtonText(applyRect, "Apply Selected", drawBackground: canApplyNextProfile, doMouseoverSound: canApplyNextProfile, textColor: canApplyNextProfile ? Color.white : Color.grey, active: canApplyNextProfile);
             Rect unapplyRect = new Rect(applyRect.xMax + Margin, examineRect.yMax + 4f, 200f, Text.LineHeight);
             bool unapplyClicked = Widgets.ButtonText(unapplyRect, "Unapply Current", drawBackground: canUnapplyNextProfile, doMouseoverSound: canUnapplyNextProfile, textColor: canUnapplyNextProfile ? Color.white : Color.grey, active: canUnapplyNextProfile);
             Rect onlyErroredRect = new Rect(unapplyRect);
             onlyErroredRect.x = unapplyRect.xMax + Margin;
-            
+            bool oldErrored = onlyShowErrored;
             Widgets.CheckboxLabeled(onlyErroredRect, "Only show errors", ref onlyShowErrored);
+            if (onlyShowErrored != oldErrored && ProfileManager.currentProfile != null)
+                ProfileManager.currentProfile.heightChanged = true;
+            Rect clearErrorsRect = new Rect(onlyErroredRect);
+            clearErrorsRect.x = onlyErroredRect.xMax + Margin;
+            bool clearErrorsClicked = Widgets.ButtonText(clearErrorsRect, "Delete all errors");
+
+            if (clearErrorsClicked)
+            {
+                List<string> errorCommands = new List<string>();
+                foreach(string command in ProfileManager.currentProfile?.loaded ?? Enumerable.Empty<string>())
+                {
+                    if (ProfileManager.currentProfile.HasError(command))
+                    {
+                        errorCommands.Add(command);
+                    }
+                }
+                foreach (string error in errorCommands)
+                {
+                    ProfileManager.DeleteCommand(error);
+                }
+            }
 
             if (applyClicked && canApplyNextProfile)
             {
@@ -190,24 +211,19 @@ namespace DRimEditor.Windows
                 }
                 ProfileManager.UnsetProfileToBeApplied();  
             }
-
-            
             float totalTopHeight =  labelRect.height + nextApplyRect.height + examineRect.height +  applyRect.height + unapplyRect.height + 4f;
-            float viewRectHeight = canvas.height - totalTopHeight;
-            if (ProfileManager.currentProfile != null)
-            {
-                viewRectHeight = ProfileManager.currentProfile.getLoaded.Count() * Text.LineHeight * 2f;
-            }
-            Rect outRect = new Rect(canvas.x, unapplyRect.yMax + 4f, canvas.width, canvas.height - totalTopHeight);
-            Rect viewRect = new Rect(canvas.x, unapplyRect.yMax + 4f, canvas.width - 16f, viewRectHeight);
+            Rect outRect = new Rect(canvas.x, unapplyRect.yMax + 4f, canvas.width-20f, canvas.height - totalTopHeight);
+
+            float profileHeight = ProfileManager.currentProfile != null ? ProfileManager.currentProfile.GetHeight(outRect.width, onlyShowErrored) : 0f;
+            float viewRectHeight = Mathf.Max(canvas.height - totalTopHeight, profileHeight);
+            Rect viewRect = new Rect(canvas.x, unapplyRect.yMax + 4f, canvas.width - 36f, viewRectHeight);
             Widgets.DrawBoxSolid(outRect, Color.black);
 
-            float curHeight = 0f;
             float curY = viewRect.yMin;
             float oldY = curY;
             int index = 0;
             Widgets.BeginScrollView(outRect, ref detailScrollPosition, viewRect, true);
-            using (List<string>.Enumerator? enumerator = ProfileManager.currentProfile?.getLoaded.GetEnumerator())
+            using (List<string>.Enumerator? enumerator = ProfileManager.currentProfile?.loaded.GetEnumerator())
             {
                 if (enumerator is List<string>.Enumerator iterate)
                 {
@@ -215,14 +231,25 @@ namespace DRimEditor.Windows
                     while (iterate.MoveNext())
                     {
                         string current = iterate.Current;
+                        string currentFormatted = Profile.FormatComand(current);
+                        float commandHeight = ProfileManager.currentProfile.CommandHeight(current, outRect.width);
                         if (onlyShowErrored && !ProfileManager.currentProfile.HasError(current))
                         {
                             index++;
                             continue;
                         }
-                        Widgets.LongLabel(outRect.x, outRect.width, Profile.FormatComand(current), ref curY);
-                        float itemHeight = curY - oldY;
-                        Rect rowRect = new Rect(outRect.x, outRect.y + curHeight, canvas.width, itemHeight);
+                        if (curY + commandHeight < detailScrollPosition.y || curY > detailScrollPosition.y + outRect.height + viewRect.yMin + commandHeight)
+                        {
+                            curY += commandHeight;
+                            oldY = curY;
+                            index++;
+                            continue;
+                        }
+                        Rect rowRect = new Rect(outRect.x, curY, outRect.width, commandHeight);
+                        Widgets.Label(rowRect, currentFormatted);
+                        curY += commandHeight;
+                        //Widgets.Label(new Rect(outRect.x, curY, outRect.width, commandHeight), currentFormatted);
+                        //Rect rowRect = new Rect(outRect.x, outRect.y + curHeight, canvas.width, commandHeight);
                         if (ProfileManager.currentProfile.HasError(current))
                         {
                             GUI.color = Color.yellow;
@@ -233,38 +260,37 @@ namespace DRimEditor.Windows
                             Widgets.DrawHighlight(rowRect);
                         }
                         GUI.color = Color.white;
-                        if (Mouse.IsOver(rowRect) && Event.current.type == EventType.MouseDown && Event.current.button == 1)
+                        if (ProfileManager.currentProfile == ProfileManager.activeProfile && Mouse.IsOver(rowRect) && Event.current.type == EventType.MouseDown && Event.current.button == 1)
                         {
                             int curIndex = index;
                             List<FloatMenuOption> options = new List<FloatMenuOption> { new FloatMenuOption("Delete command", () => ProfileManager.DeleteCommand(curIndex), MenuOptionPriority.Default, null) };
-                            if (ProfileManager.currentProfile.HasError(current))
+                            if (ProfileManager.activeProfile.HasError(current))
                             {
-                                options.Add(new FloatMenuOption(ProfileManager.currentProfile.GetError(current), null));
+                                options.Add(new FloatMenuOption(ProfileManager.activeProfile.GetError(current), null));
                             }
                             Find.WindowStack.Add(new FloatMenu(options));
                             Event.current.Use();
                         }
-                        curHeight += itemHeight;
                         oldY = curY;
                         index++;
                         noErrors = false;
                     }
-                    if (ProfileManager.currentProfile?.getLoaded == null || ProfileManager.currentProfile.getLoaded.Count == 0)
+                    if (ProfileManager.currentProfile?.loaded == null || ProfileManager.currentProfile.loaded.Count == 0)
                     {
-                        Rect rowRect = new Rect(outRect.x, outRect.y + curHeight, canvas.width, Text.LineHeight);
+                        Rect rowRect = new Rect(outRect.x, outRect.y, canvas.width, Text.LineHeight);
                         Widgets.Label(rowRect, "Empty profile");
                     }
                     else if (noErrors)
                     {
-                        Rect rowRect = new Rect(outRect.x, outRect.y + curHeight, canvas.width, Text.LineHeight);
+                        Rect rowRect = new Rect(outRect.x, outRect.y, canvas.width, Text.LineHeight);
                         Widgets.Label(rowRect, "No errors");
                     }
                     
                 }
                 else
                 {
-                    Rect rowRect = new Rect(outRect.x, outRect.y + curHeight, canvas.width, Text.LineHeight);
-                    Widgets.Label(rowRect, "No profile loaded");
+                    Rect rowRect = new Rect(outRect.x, outRect.y, canvas.width, Text.LineHeight);
+                    Widgets.Label(rowRect, "No profile selected");
                 }
             }
             Widgets.EndScrollView();

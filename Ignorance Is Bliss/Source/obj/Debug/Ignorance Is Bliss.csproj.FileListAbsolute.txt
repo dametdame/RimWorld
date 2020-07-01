@@ -2,3 +2,6 @@ C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Ignorance Is Bliss\1
 C:\Users\rrmcinv\Desktop\Ignorance Is Bliss\Source\obj\Debug\Ignorance Is Bliss.csprojAssemblyReference.cache
 C:\Users\rrmcinv\Desktop\Ignorance Is Bliss\Source\obj\Debug\Ignorance Is Bliss.csproj.CoreCompileInputs.cache
 C:\Users\rrmcinv\Desktop\Ignorance Is Bliss\Source\obj\Debug\IgnoranceIsBliss.dll
+C:\Users\rrmcinv\Desktop\RimWorld\Ignorance Is Bliss\Source\obj\Debug\Ignorance Is Bliss.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Ignorance Is Bliss\Source\obj\Debug\Ignorance Is Bliss.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Ignorance Is Bliss\Source\obj\Debug\IgnoranceIsBliss.dll

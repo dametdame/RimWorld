@@ -2,3 +2,6 @@ C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Throwaway\1.1\Assemb
 C:\Users\rrmcinv\Desktop\Throwaway\Source\obj\Debug\Throwaway.csprojAssemblyReference.cache
 C:\Users\rrmcinv\Desktop\Throwaway\Source\obj\Debug\Throwaway.csproj.CoreCompileInputs.cache
 C:\Users\rrmcinv\Desktop\Throwaway\Source\obj\Debug\Throwaway.dll
+C:\Users\rrmcinv\Desktop\RimWorld\Throwaway\Source\obj\Debug\Throwaway.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Throwaway\Source\obj\Debug\Throwaway.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Throwaway\Source\obj\Debug\Throwaway.dll

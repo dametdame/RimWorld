@@ -14,5 +14,22 @@ namespace DRimEditor
     {
 
         public abstract void PreActive();
+
+        // these should be abstract if I want to make this modular
+        public virtual void Initialize()
+        {
+
+        }
+
+        public virtual void NewDefHandler()
+        {
+
+        }
+
+        public virtual void DeleteDefHandler()
+        {
+
+        }
+
     }
 }

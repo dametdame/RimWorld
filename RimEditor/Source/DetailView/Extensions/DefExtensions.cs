@@ -7,10 +7,11 @@ using Verse;
 
 namespace DRimEditor.DetailView
 {
-	// Token: 0x0200000A RID: 10
 	public static class DefExtensions
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x00003664 File Offset: 0x00001864
+		private static Dictionary<Def, Texture2D> _cachedDefIcons = new Dictionary<Def, Texture2D>();
+		private static Dictionary<Def, Color> _cachedIconColors = new Dictionary<Def, Color>();
+
 		public static string LabelStyled(this Def def)
 		{
 			bool flag = def.label.NullOrEmpty();
@@ -33,9 +34,7 @@ namespace DRimEditor.DetailView
 			}
 			return result;
 		}
-
 	
-		// Token: 0x0600003F RID: 63 RVA: 0x000036CE File Offset: 0x000018CE
 		public static void DrawColouredIcon(this Def def, Rect canvas)
 		{
 			GUI.color = def.IconColor();
@@ -43,7 +42,6 @@ namespace DRimEditor.DetailView
 			GUI.color = Color.white;
 		}
 
-		// Token: 0x06000040 RID: 64 RVA: 0x000036F8 File Offset: 0x000018F8
 		public static Color IconColor(this Def def)
 		{
 			bool flag = DefExtensions._cachedIconColors.ContainsKey(def);
@@ -120,7 +118,6 @@ namespace DRimEditor.DetailView
 			return result;
 		}
 
-		// Token: 0x06000041 RID: 65 RVA: 0x000038E0 File Offset: 0x00001AE0
 		public static Texture2D IconTexture(this Def def)
 		{
 			bool flag = DefExtensions._cachedDefIcons.ContainsKey(def);
@@ -186,7 +183,6 @@ namespace DRimEditor.DetailView
 			return result;
 		}
 		
-		// Token: 0x06000042 RID: 66 RVA: 0x00003A84 File Offset: 0x00001C84
 		public static float StyledLabelAndIconSize(this Def def)
 		{
 			bool WW = Text.WordWrap;
@@ -196,29 +192,9 @@ namespace DRimEditor.DetailView
 			return width;
 		}
 
-		public static ItemDetailDef GetDef(this Def def)
+		public static ItemDetail GetDef(this Def def)
 		{
-			
-			bool flag = DefExtensions._cachedDefHelpDefLinks.ContainsKey(def);
-			ItemDetailDef result;
-			if (flag)
-			{
-				result = DefExtensions._cachedDefHelpDefLinks[def];
-			}
-			else
-			{
-				DefExtensions._cachedDefHelpDefLinks.Add(def, DefDatabase<ItemDetailDef>.AllDefsListForReading.FirstOrDefault((ItemDetailDef hd) => hd.keyDef == def));
-				result = DefExtensions._cachedDefHelpDefLinks[def];
-			}
-			return result;
-		}
-
-		// Token: 0x0400002A RID: 42
-		private static Dictionary<Def, Texture2D> _cachedDefIcons = new Dictionary<Def, Texture2D>();
-
-		// Token: 0x0400002B RID: 43
-		private static Dictionary<Def, Color> _cachedIconColors = new Dictionary<Def, Color>();
-
-		private static Dictionary<Def, ItemDetailDef> _cachedDefHelpDefLinks = new Dictionary<Def, ItemDetailDef>();
+			return DefExplorerWindow.itemDetails[def];
+		}	
 	}
 }
