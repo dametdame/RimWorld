@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RimWorld;
 using Verse;
 using UnityEngine;
+using DTechprinting.Comps;
 
 namespace DTechprinting
 {
@@ -14,15 +15,14 @@ namespace DTechprinting
 
 		public const int stackSize = 10;
 		public const float forceSingleThreshold = 1500f;
-
-		public static ThingDef Techshard(ResearchProjectDef rpd)
+		
+		public static ThingDef ShardForProject(ResearchProjectDef rpd)
 		{
-			ThingDef cachedTechprint = DefDatabase<ThingDef>.AllDefs.FirstOrDefault(delegate (ThingDef x)
+			return DefDatabase<ThingDef>.AllDefs.FirstOrDefault(delegate (ThingDef x)
 			{
-				CompProperties_Techprint compProperties = x.GetCompProperties<CompProperties_Techprint>();
-				return compProperties != null && compProperties.project == rpd && x.defName.Contains("Techshard");
+				CompProperties_Techshard compProperties = x.GetCompProperties<CompProperties_Techshard>();
+				return compProperties != null && compProperties.project == rpd;
 			});
-			return cachedTechprint;
 		}
 
 		public static float GetWorstValue(ThingDef td)
@@ -107,8 +107,16 @@ namespace DTechprinting
 
 		public static Thing MakeShards(Thing ingredient)
 		{
-			ResearchProjectDef rpd = Base.thingDic[ingredient.def];
-			ThingDef shardDef = Techshard(rpd);
+			//ResearchProjectDef rpd = Base.thingDic[ingredient.def];
+			//ThingDef shardDef = Techshard(rpd);
+			CompShardable comp = ingredient.TryGetComp<CompShardable>();
+			if (comp == null)
+            {
+				Log.Error("Tried to shard thing with no CompShardable");
+				return null;
+            }
+
+			ThingDef shardDef = comp.shard;
 
 			Thing thing = ThingMaker.MakeThing(shardDef);
 			thing.stackCount = CalcNumShardsFor(ingredient);

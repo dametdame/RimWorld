@@ -19,7 +19,7 @@ namespace DThermodynamicsCore.Core_Patches
             CompDTemperature comp = __instance.TryGetComp<CompDTemperature>();
             if (comp != null)
             {
-                __result = (float)comp.curTemp;
+                __result = comp.GetCurTemp();
                 return false;
             }
             return true;

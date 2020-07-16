@@ -62,6 +62,11 @@ namespace DThermodynamicsCore.Comps
 			}
 		}
 
+		public virtual float GetCurTemp()
+        {
+			return (float)this.curTemp;
+        }
+
 		public virtual string GetState(double temp)
 		{
 			return "";
@@ -83,7 +88,7 @@ namespace DThermodynamicsCore.Comps
 		}
 
 
-		public virtual void Diffuse(int interval)
+		public virtual void Diffuse(double diffuseTo, int interval)
 		{
 			double diffuseTime = PropsTemp.diffusionTime;
 			if (ThermodynamicsSettings.slowDiffuseWhileCarried && PawnIsCarrying())
@@ -91,18 +96,16 @@ namespace DThermodynamicsCore.Comps
 				diffuseTime *= 10;
 			}
 			double minStepScaled = minStep * interval;
-			double ambient = this.AmbientTemperature;
-			double shift = ambient - curTemp;
+			double shift = diffuseTo - curTemp;
 			double changeMag = Math.Abs(interval * shift / diffuseTime);
 			double step = (Math.Abs(shift) < minStepScaled || changeMag > CompDTemperature.minStep) ? changeMag : minStepScaled;
 			curTemp += Math.Sign(shift) * step * ThermodynamicsSettings.diffusionModifier;
-			//curTemp += CalcTempChange(ambient, this.curTemp, interval, diffuseTime, minStepScaled);
 		}
 
 
 		public virtual void tempTick(int numTicks)
 		{
-			this.Diffuse(numTicks);
+			this.Diffuse(this.AmbientTemperature, numTicks);
 		}
 
 		public override void CompTick()

@@ -12,12 +12,14 @@ namespace DTechprinting
 	public static class ThingDefGenerator_Techshards
 	{
 
+
 		public static IEnumerable<ThingDef> ImpliedTechshardDefs()
 		{
+			ResearchProjectHelper.AssociateAll();
 			foreach (ResearchProjectDef researchProjectDef in DefDatabase<ResearchProjectDef>.AllDefsListForReading)
 			{
 				bool unlocks = ResearchProjectHelper.ProjectUnlocksShardable(researchProjectDef);
-				if (ShardMaker.Techshard(researchProjectDef) == null && (researchProjectDef.techprintCount > 0 || unlocks))
+				if (ShardMaker.ShardForProject(researchProjectDef) == null && (researchProjectDef.techprintCount > 0 || unlocks))
 				{
 					ThingDef thingDef = new ThingDef();
 					thingDef.category = ThingCategory.Item;

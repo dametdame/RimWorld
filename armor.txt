@@ -1,0 +1,71 @@
+Ref:
+Steel = 1s, 1.5b
+Plasteel = 2s, 3b
+
+VAE:
+Gambeson: 4x stuff + 0.06s, 0.09b
+Quilted Vest: 5x stuff + 0.07s, 0.105b
+Light Plate: 2.5x stuff
+Plate Shoulderpads: 3x stuff
+Chestplate: 2.5x stuff
+Chainmail: 1.341x stuff
+Plate Helmet: 2x stuff
+
+VFE: Medieval:
+Plate Helmet Light: 1.2x stuff
+Plate Helmet Heavy: 2x stuff
+Plate Armor Heavy: 2.5x stuff
+
+Dragons Not Included:
+Light Leather Pauldrons: 2x stuff
+Heavy Leather Pauldrons: 2x stuff
+Knight Pauldrons: 1.25x stuff
+Breastplate Knight: 2.5x stuff
+Helmet Knight: 1.5x stuff
+Goggled Nausic Hood: 1x stuff
+Armoured Nausic Hood: 3x stuff
+Gasmask Armoured: 3x stuff
+
+CE:
+Bascinet: 2.5x stuff
+
+Core:
+Plate armor: 2.5x stuff
+
+
+
+Metal
+Light Plate: 2.5x stuff			130 metallic, 18000 work
+Chestplate: 2.5x stuff			90 metallic, 14000 work
+Chainmail: 1.341x stuff			60 metallic, 36000 work	-> 16000 work
+
+Plate Helmet Light: 1.2x stuff	40 metallic, 3200 work
+Helmet Knight: 1.5x stuff		20 metallic, 3000 work			-> 50 metallic, 4500 work
+
+Knight Pauldrons: 1.25x stuff	30 metallic, 4000 work				-> 2x stuff
+
+
+
+
+Plate
+Plate armor: 2.5x stuff			170 metallic, 38000 work		-> 3x stuff
+Breastplate Knight: 2.5x stuff	40 metallic, 5000 work      		-> 100 metallic, 3x stuff, 28000 work
+
+Plate Helmet: 2x stuff			50 steeled, 6800 work				-> 70 steeled
+
+Plate Shoulderpads: 3x stuff	40 metallic, 8000 work
+
+
+
+
+Heavy Plate
+Plate Armor Heavy: 2.5x stuff  240 metallic, 60000 work				-> 4x stuff
+
+Plate Helmet Heavy: 2x stuff   70 metallic, 12000 work				-> 90 metallic, 3x stuff
+Bascinet: 2.5x stuff			50 steeled, 8000 work				-> 120 steeled, 4x stuff, 15000 work
+
+
+
+
+
+

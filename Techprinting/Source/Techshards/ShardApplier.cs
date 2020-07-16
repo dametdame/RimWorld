@@ -16,7 +16,6 @@ namespace DTechprinting
 
 		public static void ApplyTechshards(ResearchProjectDef proj, Pawn applyingPawn, int amount)
 		{
-
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine("LetterTechshardAppliedPartIntro".Translate(amount, proj.Named("PROJECT")));
 			stringBuilder.AppendLine();
@@ -267,7 +266,7 @@ namespace DTechprinting
 				int shardRefund = shardsApplied - shardsRequired;
 				if (shardRefund > 0)
 				{
-					ThingDef techShardDef = ShardMaker.Techshard(proj);
+					ThingDef techShardDef = ShardMaker.ShardForProject(proj);
 					Thing shards = ThingMaker.MakeThing(techShardDef);
 					shards.stackCount = shardRefund;
 					GenPlace.TryPlaceThing(shards, applyingPawn.Position, applyingPawn.Map, ThingPlaceMode.Near, null, null, default(Rot4));
@@ -286,7 +285,7 @@ namespace DTechprinting
 				int shardRefund = shardsApplied - Mathf.RoundToInt((float)shardsApplied * (xpRequired / xpGained));
 				if (shardRefund > 0)
 				{
-					ThingDef techShardDef = ShardMaker.Techshard(shardType);
+					ThingDef techShardDef = ShardMaker.ShardForProject(shardType);
 					Thing shards = ThingMaker.MakeThing(techShardDef);
 					shards.stackCount = shardRefund;
 					GenPlace.TryPlaceThing(shards, applyingPawn.Position, applyingPawn.Map, ThingPlaceMode.Near, null, null, default(Rot4));

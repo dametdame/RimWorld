@@ -21,6 +21,11 @@ namespace DIgnoranceIsBliss.Core_Patches
             {typeof(IncidentWorker_DeepDrillInfestation), TechLevel.Animal },
         };
 
+        public static Dictionary<string, TechLevel> questScriptDefs = new Dictionary<string, TechLevel>()
+        {
+            { "ThreatReward_MechPods_MiscReward", TechLevel.Ultra}
+        };
+
         public static Dictionary<string, TechLevel> incidentDefNames = new Dictionary<string, TechLevel>
         {
             {"CrystalloidShipPartCrash", TechLevel.Ultra },                  // Crystalloids (Rewrite)

@@ -304,7 +304,9 @@
   <ItemGroup>
     <Compile Include="AssignMealTemp.cs" />
     <Compile Include="Comps\CompDFoodTemperature.cs" />
+    <Compile Include="Comps\CompDSecondLayer.cs" />
     <Compile Include="Comps\CompProperties_DFoodTemperature.cs" />
+    <Compile Include="Comps\CompProperties_DSecondLayer.cs" />
     <Compile Include="Core Patches\Patch_FoodDeliver_Postfix.cs" />
     <Compile Include="Core Patches\Patch_FoodFeedPatient_Postfix.cs" />
     <Compile Include="Core Patches\Patch_SocialRelax_Postfix.cs" />

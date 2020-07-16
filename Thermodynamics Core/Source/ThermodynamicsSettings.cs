@@ -13,11 +13,13 @@ namespace DThermodynamicsCore
     {
         public static float diffusionModifier = 1f;
         public static bool slowDiffuseWhileCarried = true;
+        public static bool warmersSlowRot = false;
 
         public override void ExposeData()
         {
             Scribe_Values.Look(ref diffusionModifier, "diffusionModifier", 1f);
             Scribe_Values.Look(ref slowDiffuseWhileCarried, "slowDiffuseWhileCarried", true);
+            Scribe_Values.Look(ref warmersSlowRot, "warmersSlowRot", false);
             base.ExposeData();
         }
 
@@ -42,6 +44,8 @@ namespace DThermodynamicsCore
 
             ls.Gap();
             ls.CheckboxLabeled("Carried items change temperature very slowly", ref slowDiffuseWhileCarried);
+            ls.Gap();
+            ls.CheckboxLabeled("Warm storage slows rot", ref warmersSlowRot, "Things being warmed in storage will rot more slowly (equivalent to refrigeration)");
 
             ls.Gap();
             ls.End();

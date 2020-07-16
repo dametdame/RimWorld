@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DTechprinting.Comps;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,8 @@ namespace DTechprinting
                     {
                         if (!thingDic.ContainsKey(thing))
                             thingDic.Add(thing, rpd);
+                        if (thing.GetCompProperties<CompProperties_Shardable>() == null)
+                            thing.comps.Add(new CompProperties_Shardable());
 
                         if (!researchDic.ContainsKey(rpd))
                             researchDic.Add(rpd, new List<ThingDef> { thing });
@@ -53,6 +56,8 @@ namespace DTechprinting
                     if (rpd != null)
                     {
                         thingDic.SetOrAdd(thing, rpd);
+                        if (thing.GetCompProperties<CompProperties_Shardable>() == null)
+                            thing.comps.Add(new CompProperties_Shardable());
 
                         if (!researchDic.ContainsKey(rpd))
                             researchDic.Add(rpd, new List<ThingDef> { thing });

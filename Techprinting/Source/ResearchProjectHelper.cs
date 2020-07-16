@@ -16,47 +16,108 @@ namespace DTechprinting
 		public static List<ResearchProjectDef> added = new List<ResearchProjectDef>();
 		public static Dictionary<string, int> shardCostAssignment = new Dictionary<string, int>();
 
+		public static Dictionary<ThingDef, ResearchProjectDef> allThingDic = null;
+		public static Dictionary<ResearchProjectDef, List<ThingDef>> allResearchDic = null;
+
+		public static void AssociateAll()
+        {
+			allThingDic = new Dictionary<ThingDef, ResearchProjectDef>();
+			allResearchDic = new Dictionary<ResearchProjectDef, List<ThingDef>>();
+
+			foreach (RecipeDef recipe in DefDatabase<RecipeDef>.AllDefsListForReading)
+			{
+				ResearchProjectDef rpd = ThingDefHelper.GetBestRPDForRecipe(recipe, true);
+				if (rpd != null && recipe.ProducedThingDef != null)
+				{
+					ThingDef producedThing = recipe.ProducedThingDef;
+					allThingDic.SetOrAdd(producedThing, rpd);
+
+					List<ThingDef> things;
+					if (allResearchDic.TryGetValue(rpd, out things))
+						things.Add(producedThing);
+					else
+						allResearchDic.Add(rpd, new List<ThingDef> { producedThing });
+				}
+			}
+
+			if (TechprintingSettings.shardBuildings)
+			{
+				foreach (ThingDef building in DefDatabase<ThingDef>.AllDefs.Where(x => x.category == ThingCategory.Building || x.building != null))
+				{
+					if (allThingDic.ContainsKey(building))
+						continue;
+					ResearchProjectDef rpd = ThingDefHelper.GetBestRPDForBuilding(building, true);
+					if (rpd != null)
+					{
+						allThingDic.SetOrAdd(building, rpd);
+
+						List<ThingDef> things;
+						if (allResearchDic.TryGetValue(rpd, out things))
+							things.Add(building);
+						else
+							allResearchDic.Add(rpd, new List<ThingDef> { building });
+					}
+				}
+			}
+			GearAssigner.HardAssign(ref allThingDic, ref allResearchDic);
+			GearAssigner.OverrideAssign(ref allThingDic, ref allResearchDic);
+		}
+
 		public static bool ProjectUnlocksShardable(ResearchProjectDef rpd)
 		{
-			if (GearAssigner.HasHardAssignment(rpd) || GearAssigner.HasOverrideAssignment(rpd))
-				return true;
-			foreach(RecipeDef recipe in DefDatabase<RecipeDef>.AllDefs)
-			{
-				/*
-				if (recipe.ProducedThingDef == null)
-				{
-					continue;
-				}
-				ResearchProjectDef best = ThingDefHelper.GetBestResearchProject(recipe.ProducedThingDef, true);
-				*/
-				ResearchProjectDef best = ThingDefHelper.GetBestRPDForRecipe(recipe, true);
-				if (best == rpd)
-					return true;
-				
-			}
-			return false;
+			if (allResearchDic == null)
+				AssociateAll();
+			return allResearchDic.ContainsKey(rpd);
 		}
 
 		public static bool ProjectHasWeaponApparel(ResearchProjectDef rpd)
 		{
-			if (GearAssigner.HasHardAssignment(rpd) || GearAssigner.HasOverrideAssignment(rpd))
-				return true;
-			foreach (RecipeDef recipe in DefDatabase<RecipeDef>.AllDefs)
-			{
-				
-				if (recipe.ProducedThingDef == null || (!recipe.ProducedThingDef.IsApparel && !recipe.ProducedThingDef.IsWeapon))
-				{
-					continue;
-				}
-				//ResearchProjectDef best = ThingDefHelper.GetBestResearchProject(recipe.ProducedThingDef, true);
-				ResearchProjectDef best = ThingDefHelper.GetBestRPDForRecipe(recipe, true);
-				if (best == rpd)
+			if (allResearchDic == null)
+				AssociateAll();
+			List<ThingDef> unlocks;
+			if (!allResearchDic.TryGetValue(rpd, out unlocks))
+				return false;
+
+			foreach(ThingDef td in unlocks)
+            {
+				if (td.IsApparel || td.IsWeapon)
 					return true;
-			}
+            }
 			return false;
 		}
 
-		public static bool InTechRange(ResearchProjectDef rpd)
+			/*
+			public static bool ProjectUnlocksShardable(ResearchProjectDef rpd)
+			{
+				if (GearAssigner.HasHardAssignment(rpd) || GearAssigner.HasOverrideAssignment(rpd))
+					return true;
+				foreach(RecipeDef recipe in DefDatabase<RecipeDef>.AllDefs)
+				{
+					ResearchProjectDef best = ThingDefHelper.GetBestRPDForRecipe(recipe, true);
+					if (best == rpd)
+						return true;	
+				}
+				return false;
+			}
+
+			public static bool ProjectHasWeaponApparel(ResearchProjectDef rpd)
+			{
+				if (GearAssigner.HasHardAssignment(rpd) || GearAssigner.HasOverrideAssignment(rpd))
+					return true;
+				foreach (RecipeDef recipe in DefDatabase<RecipeDef>.AllDefs)
+				{
+					if (recipe.ProducedThingDef == null || (!recipe.ProducedThingDef.IsApparel && !recipe.ProducedThingDef.IsWeapon))
+					{
+						continue;
+					}
+					ResearchProjectDef best = ThingDefHelper.GetBestRPDForRecipe(recipe, true);
+					if (best == rpd)
+						return true;
+				}
+				return false;
+			}*/
+
+			public static bool InTechRange(ResearchProjectDef rpd)
 		{
 			return rpd.techLevel >= (TechLevel)Mathf.RoundToInt(TechprintingSettings.techLevelToAddPrints);
 		}
@@ -70,8 +131,29 @@ namespace DTechprinting
 			}
 		}
 
+		public static void SetHardTechprintReqs()
+        {
+			List<ResearchProjectDef> newAdd = new List<ResearchProjectDef>();
+			foreach (string rpdString in shardCostAssignment.Keys)
+			{
+
+				ResearchProjectDef rpd = DefDatabase<ResearchProjectDef>.GetNamedSilentFail(rpdString);
+				if (rpd != null)
+				{
+					newAdd.Add(rpd);
+					SetTechprintCost(rpd, shardCostAssignment[rpdString]);
+				}
+			}
+			if (!newAdd.NullOrEmpty())
+			{
+				Log.Message("DTechprinting: Set shard requirements from SetShardCost for " + newAdd.ToStringSafeEnumerable());
+				ResearchProjectHelper.added.AddRange(newAdd);
+			}
+		}
+
 		public static void SetTechprintRequirements()
 		{
+			AssociateAll();
 			if (!TechprintingSettings.addTechprintRequirements)
 				return;
 			List<ResearchProjectDef> newAdd = new List<ResearchProjectDef>();
@@ -83,15 +165,6 @@ namespace DTechprinting
 						continue;
 					newAdd.Add(rpd);
 					SetTechprintCost(rpd, TechprintingSettings.numShardsToAdd);
-				}
-			}
-			foreach (string rpdString in shardCostAssignment.Keys)
-            {
-				ResearchProjectDef rpd = DefDatabase<ResearchProjectDef>.GetNamedSilentFail(rpdString);
-				if (rpd != null)
-				{
-					newAdd.Add(rpd);
-					SetTechprintCost(rpd, shardCostAssignment[rpdString]);
 				}
 			}
 			if (!newAdd.NullOrEmpty())

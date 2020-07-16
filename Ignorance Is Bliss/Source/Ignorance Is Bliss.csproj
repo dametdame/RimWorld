@@ -297,6 +297,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core Patches\Patch_CanRun_Prefix.cs" />
     <Compile Include="Core Patches\Patch_FinishProject_Postfix.cs" />
     <Compile Include="Core Patches\Patch_UsableIncidentsInCategory_Postfix.cs" />
     <Compile Include="Core Patches\Patch_PawnsArriveCanFireNowSub_Postfix.cs" />

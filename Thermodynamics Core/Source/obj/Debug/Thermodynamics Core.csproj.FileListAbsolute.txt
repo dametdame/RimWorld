@@ -3,3 +3,6 @@ C:\Users\rrmcinv\Desktop\Thermodynamics Core\Source\obj\Debug\Thermodynamics Cor
 C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Thermodynamics Core\1.1\Assemblies\ThermodynamicsCore.dll
 C:\Users\rrmcinv\Desktop\Thermodynamics Core\Source\obj\Debug\ThermodynamicsCore.dll
 C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Thermodynamics - Core\1.1\Assemblies\ThermodynamicsCore.dll
+C:\Users\rrmcinv\Desktop\RimWorld\Thermodynamics Core\Source\obj\Debug\Thermodynamics Core.csprojAssemblyReference.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Thermodynamics Core\Source\obj\Debug\Thermodynamics Core.csproj.CoreCompileInputs.cache
+C:\Users\rrmcinv\Desktop\RimWorld\Thermodynamics Core\Source\obj\Debug\ThermodynamicsCore.dll

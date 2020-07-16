@@ -28,6 +28,7 @@ namespace DTechprinting
         public static int numShardsToAdd = 100;
         public static bool splitProjects = false;
         public static bool lateLoad = true;
+        public static bool shardBuildings = false;
 
         public override void ExposeData()
         {
@@ -44,6 +45,7 @@ namespace DTechprinting
             Scribe_Values.Look(ref numShardsToAdd, "numShardToAdd", 100);
             Scribe_Values.Look(ref splitProjects, "splitProjects", false);
             Scribe_Values.Look(ref lateLoad, "lateLoad", true);
+            Scribe_Values.Look(ref shardBuildings, "shardBuildings", false);
             base.ExposeData();
         }
 
@@ -85,6 +87,9 @@ namespace DTechprinting
             Rect yieldSliderRect = yieldRect.RightPartPixels(yieldRect.width - 300);
             Widgets.Label(yieldLabelRect, "Techshard yield multiplier (Default: 1)");
             shardYieldRatio = Widgets.HorizontalSlider(yieldSliderRect, shardYieldRatio, 0.1f, 3.0f, middleAlignment: false, label: shardYieldRatio.ToString("F1"), leftAlignedLabel: null, rightAlignedLabel: null, roundTo: 0.1f);
+            ls.Gap();
+
+            ls.CheckboxLabeled("Allow sharding buildings", ref shardBuildings, "Allow buildings to be turned into shards, and, if enabled, allow shards to be added to projects with only buildings");
             ls.Gap();
 
             ls.CheckboxLabeled("Enable profitable techshards", ref profitableShards, "Gives techshards a value based on the research project they unlock. Requires a restart to take effect.");

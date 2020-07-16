@@ -1,0 +1,157 @@
+ThreatBig Ambush Core
+ThreatBig ManhunterAmbush Core
+Misc CaravanMeeting Core
+ThreatSmall CaravanDemand Core
+DiseaseHuman Disease_Flu Core
+DiseaseHuman Disease_Plague Core
+DiseaseHuman Disease_Malaria Core
+DiseaseHuman Disease_SleepingSickness Core
+DiseaseHuman Disease_FibrousMechanites Core
+DiseaseHuman Disease_SensoryMechanites Core
+DiseaseHuman Disease_GutWorms Core
+DiseaseHuman Disease_MuscleParasites Core
+DiseaseAnimal Disease_AnimalFlu Core
+DiseaseAnimal Disease_AnimalPlague Core
+Misc ResourcePodCrash Core
+Misc PsychicSoothe Core
+Misc SelfTame Core
+Misc AmbrosiaSprout Core
+Misc FarmAnimalsWanderIn Core
+Misc WandererJoin Core
+Misc RefugeePodCrash Core
+Misc ThrumboPasses Core
+Misc RansomDemand Core
+Misc MeteoriteImpact Core
+Misc HerdMigration Core
+Misc WildManWandersIn Core
+Misc PsychicDrone Core
+Misc ToxicFallout Core
+Misc VolcanicWinter Core
+Misc HeatWave Core
+Misc ColdSnap Core
+Misc Flashstorm Core
+Misc ShortCircuit Core
+Misc CropBlight Core
+Misc Alphabeavers Core
+ShipChunkDrop ShipChunkDrop Core
+OrbitalVisitor OrbitalTraderArrival Core
+FactionArrival TraderCaravanArrival Core
+FactionArrival TravelerGroup Core
+AllyAssistance RaidFriendly Core
+Special StrangerInBlackJoin Core
+ThreatBig RaidEnemy Core
+ThreatBig Infestation Core
+DeepDrillInfestation DeepDrillInfestation Core
+ThreatBig ManhunterPack Core
+ThreatBig DefoliatorShipPartCrash Core
+ThreatBig PsychicEmanatorShipPartCrash Core
+ThreatBig AnimalInsanityMass Core
+ThreatBig MechCluster Core
+ThreatSmall AnimalInsanitySingle Core
+Misc Eclipse Core
+Misc SolarFlare Core
+Misc Aurora Core
+GiveQuest GiveQuest_Random Core
+GiveQuest GiveQuest_EndGame_ShipEscape Core
+FactionArrival CaravanArrivalTributeCollector Royalty
+Special AnimaTreeSpawn Royalty
+GiveQuest GiveQuest_EndGame_RoyalAscent Royalty
+GiveQuest GiveQuest_Intro_Wimp Royalty
+GiveQuest GiveQuest_Intro_Deserter Royalty
+FactionArrival VisitorGroupSpacerCruise Hospitality
+FactionArrival VisitorGroupSpacerLuxury Hospitality
+FactionArrival VisitorGroup Hospitality
+FactionArrival VisitorGroupMax Hospitality
+FactionArrival VisitorGroupSelectFaction Hospitality
+Misc HappyGuestJoins Hospitality
+DiseaseHuman Disease_CommonCold Diseases Overhauled
+DiseaseHuman Disease_KindredDickVirus Diseases Overhauled
+DiseaseHuman Disease_Tuberculosis Diseases Overhauled
+DiseaseHuman Disease_VoightBernsteinDisease Diseases Overhauled
+DiseaseHuman Disease_NewReschianFever Diseases Overhauled
+DiseaseHuman Disease_LymphaticMechanites Diseases Overhauled
+DiseaseHuman Disease_BrainWorm Diseases Overhauled
+DiseaseHuman Disease_HeartWorm Diseases Overhauled
+DiseaseHuman Disease_LungWorms Diseases Overhauled
+ThreatBig BI_SwarmingHorde Better Infestations 1.1
+ThreatSmall BI_WorldInfestation Better Infestations 1.1
+ThreatBig BI_InsectRaid Better Infestations 1.1
+ThreatBig DireRaidEnemy Dire Raids
+Misc TowerContamination Dubs Bad Hygiene
+Misc BeeHiveSprout VGP Vegetable Garden
+GiveQuest LostCityLGE Go Explore!
+Misc AmbrosiaAnimalsLGE Go Explore!
+GiveQuest ShipCoreStartupLGE Go Explore!
+GiveQuest PrisonCampLGE Go Explore!
+Misc NewSettlementLGE Go Explore!
+GiveQuest QuestResearchRequestSW Go Explore!
+GiveQuest InterceptedMessageLGE Go Explore!
+ThreatBig FlareRaid NightVision
+GiveQuest Quest_City_Sabotage RimCities - Citadel Update
+GiveQuest Quest_City_Assault RimCities - Citadel Update
+GiveQuest Quest_City_Assassinate RimCities - Citadel Update
+GiveQuest Quest_City_Defend RimCities - Citadel Update
+GiveQuest Quest_City_PrisonBreak RimCities - Citadel Update
+Misc TransformerExplosion Rimatomics
+Misc notNothing Rimatomics
+Misc OilSpill Rimefeller
+Misc DrillQuake Rimefeller
+ThreatBig ShipCombat Save Our Ship 2
+Misc SoSFreeEntanglement Save Our Ship 2
+OrbitalVisitor TraderShipsArrival Trader ships
+Misc TraderShipsCrash Trader ships
+Misc VEE_IceAge Vanilla Events Expanded
+Misc VEE_GlobalWarming Vanilla Events Expanded
+Misc VEE_PsychicRain Vanilla Events Expanded
+Misc VEE_LongNight Vanilla Events Expanded
+Misc VEE_PsychicBloom Vanilla Events Expanded
+Misc VEE_HailStorm Vanilla Events Expanded
+Misc VEE_MeteoriteShower Vanilla Events Expanded
+Misc VEE_AnimalPodCrash Vanilla Events Expanded
+Misc VEE_WandererJoinTraitor Vanilla Events Expanded
+Misc VEE_SpaceBattle Vanilla Events Expanded
+Misc VEE_ShuttleCrash Vanilla Events Expanded
+Misc VEE_Earthquake Vanilla Events Expanded
+Misc VEE_Cargopodsweapons Vanilla Events Expanded
+Misc VEE_Cargopodsapparel Vanilla Events Expanded
+Misc VEE_CaravanAnimalsWanderIn Vanilla Events Expanded
+Misc VEE_CropSprout Vanilla Events Expanded
+Misc VEE_BattleAnimalsWanderIn Vanilla Events Expanded
+Misc VEE_Drought Vanilla Events Expanded
+Misc VEE_WildMenWanderIn Vanilla Events Expanded
+Misc VEE_HuntingParty Vanilla Events Expanded
+ThreatBig RaidEnemyPurple Vanilla Events Expanded
+ThreatBig ManhunterPackPurple Vanilla Events Expanded
+ThreatBig AnimalInsanityMassPurple Vanilla Events Expanded
+ThreatBig VFEM_BlackKnight Vanilla Factions Expanded - Medieval
+ThreatBig VFEM_PursuitParty Vanilla Factions Expanded - Medieval
+GiveQuest VFEM_Quest_MedievalTournament Vanilla Factions Expanded - Medieval
+Misc Election [1.1] Psychology (unofficial)
+Misc AA_Incident_Aerofleets Alpha Animals
+ThreatBig AA_IncidentStalkingArcticLion Alpha Animals
+Misc AA_IncidentBlizzariskClutchMother Alpha Animals
+Misc AA_IncidentDunealiskClutchMother Alpha Animals
+Misc AA_IncidentFeraliskClutchMother Alpha Animals
+ThreatBig AA_IncidentSummitCrab Alpha Animals
+Misc AA_CactipineDropPod Alpha Animals
+Misc AA_Incident_Gallatross Alpha Animals
+Misc AA_Incident_SkyMeteorite Alpha Animals
+Misc AA_Incident_Bumbledrones Alpha Animals
+ThreatBig AA_Incident_BlackHive Alpha Animals
+Misc FO_BehemotPasses Forsakens: Fauna
+GiveQuest ShipCrashSW Sparkling Worlds - Full Mod
+ThreatBig RaidOnArrivalSW Sparkling Worlds - Full Mod
+Misc ThrumboSightingSW Sparkling Worlds - Full Mod
+ThreatBig HuntingPartyArrivalSW Sparkling Worlds - Full Mod
+GiveQuest QuestDoctorRequestSW Sparkling Worlds - Full Mod
+ThreatBig PsychicEmitterActivationSW Sparkling Worlds - Full Mod
+ThreatBig PsychicEmitterAnimalInsanitySW Sparkling Worlds - Full Mod
+Misc TradeFairSW Sparkling Worlds - Full Mod
+ThreatBig InsectHiveDropSW Sparkling Worlds - Full Mod
+Misc HuntingLodgeOppSW Sparkling Worlds - Full Mod
+Misc WeaponsCachePodCrashSW Sparkling Worlds - Full Mod
+ThreatSmall SplinterFaction [RF] Rumor Has It.... (Continued)
+ThreatSmall Defection [RF] Rumor Has It.... (Continued)
+ThreatSmall MadWithLoneliness [RF] Rumor Has It.... (Continued)
+ThreatSmall Brawl [RF] Rumor Has It.... (Continued)
+ThreatSmall FriendsQuarrel [RF] Rumor Has It.... (Continued)

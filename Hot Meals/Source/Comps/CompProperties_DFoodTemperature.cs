@@ -16,7 +16,6 @@ namespace DHotMeals.Comps
         {
             this.compClass = typeof(CompDFoodTemperature);
         }
-
         public bool noHeat = false;
         public string displayName = null;
         public MealTempTypes mealType = MealTempTypes.None;

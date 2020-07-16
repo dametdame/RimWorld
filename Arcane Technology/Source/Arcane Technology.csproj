@@ -43,6 +43,10 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\2050289408\v1.1\Common\Assemblies\AwesomeInventoryCommon1.1.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="SimpleSidearms">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\927155256\v1.1\Assemblies\SimpleSidearms.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -328,6 +332,8 @@
     <Compile Include="Filters\SpecialThingFilterWorker_DResearchedWeapons.cs" />
     <Compile Include="Filters\SpecialThingFilterWorker_DUnresearchedApparel.cs" />
     <Compile Include="Filters\SpecialThingFilterWorker_DUnresearchedWeapons.cs" />
+    <Compile Include="SimpleSidearmPatches\PatchSimpleSidearmsBase.cs" />
+    <Compile Include="SimpleSidearmPatches\Patch_isValidSidearm_Postfix.cs" />
     <Compile Include="StatWorker_ResearchTech.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

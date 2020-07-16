@@ -12,7 +12,7 @@ namespace DIgnoranceIsBliss
 {
     class IgnoranceSettings : ModSettings
     {
-
+        public static bool changeQuests = true;
         public static bool useHighestResearched = false;
         public static bool usePercentResearched = true;
         public static float percentResearchNeeded = 0.25f;
@@ -25,8 +25,9 @@ namespace DIgnoranceIsBliss
 
         public override void ExposeData()
         {
+            Scribe_Values.Look<bool>(ref changeQuests, "changeQuests", true);
             Scribe_Values.Look<bool>(ref useHighestResearched, "useHighestResearched", false);
-            Scribe_Values.Look<bool>(ref useHighestResearched, "usePercentResearched", true);
+            Scribe_Values.Look<bool>(ref usePercentResearched, "usePercentResearched", true);
             Scribe_Values.Look<float>(ref percentResearchNeeded, "percentResearchNeeded", 0.25f);
             Scribe_Values.Look<bool>(ref useActualTechLevel, "useActualTechLevel", false);
             Scribe_Values.Look<bool>(ref useFixedTechRange, "useFixedTechRange", false);
@@ -98,17 +99,6 @@ namespace DIgnoranceIsBliss
                     TechLevel playerTech = IgnoranceBase.playerTechLevel;
                     ls.Label("Number of eligible, hostile factions " + 
                         "(below/equivalent to/above) your tech: " + IgnoranceBase.NumFactionsBelow(playerTech) + "/" + IgnoranceBase.NumFactionsEqual(playerTech) + "/" + IgnoranceBase.NumFactionsAbove(playerTech));
-                    //Rect numFactionsRect = ls.GetRect(standardHeight);
-                    //float oneThirdWidth = ls.ColumnWidth / 3f;
-                    //Rect belowRect = numFactionsRect.LeftPartPixels(oneThirdWidth);
-                    //Rect aboveRect = numFactionsRect.RightPartPixels(oneThirdWidth);
-                    //Rect equalRect = new Rect(numFactionsRect.x + oneThirdWidth, numFactionsRect.y, oneThirdWidth, numFactionsRect.height);
-                    //string below = "Below: " + IgnoranceBase.NumFactionsBelow(playerTech);
-                    //string above = "Above: " + IgnoranceBase.NumFactionsAbove(playerTech);
-                    //string equal = "Equivalent: " + IgnoranceBase.NumFactionsEqual(playerTech);
-                    //Widgets.Label(belowRect, below);
-                    //Widgets.Label(aboveRect, above);
-                    //Widgets.Label(equalRect, equal);
                 }
                 else
                 {
@@ -118,14 +108,15 @@ namespace DIgnoranceIsBliss
             ls.Gap();
             ls.GapLine();
 
+            ls.CheckboxLabeled("Restrict quest threats", ref changeQuests, "Substitute quest factions for a faction in range. Will not change the quest description, but an appropriate faction will arrive.");
+            ls.GapLine();
+
             ls.Label("Method by which this mod will calculate your tech level for raids and incidents:");
             d = ls.RadioButton_NewTemp("Fixed range", useFixedTechRange, tooltip: "Will not dynamically update with the game state");
             if (useFixedTechRange)
             {
                 Rect fixedRangeRect = ls.GetRect(standardHeight);
                 Rect fixedRangeLabelRect = fixedRangeRect.LeftPartPixels(450);
-                //Rect fixedRangedSliderRect = fixedRangeRect.RightPartPixels(fixedRangeRect.width - 450);
-                //Widgets.Label(fixedRangeLabelRect, "Range:");
                 Widgets.IntRange(fixedRangeLabelRect, 999, ref fixedRange, 1, 7, Enum.GetName(typeof(TechLevel), fixedRange.min) + " - " + Enum.GetName(typeof(TechLevel), fixedRange.max));
             }
             else
@@ -141,8 +132,6 @@ namespace DIgnoranceIsBliss
                 percentResearchNeeded = Mathf.Clamp(percentResearchNeeded, 0.05f, 1f);
                 Rect percentResearchRect = ls.GetRect(standardHeight);
                 Rect percentResearchLabelRect = percentResearchRect.LeftPartPixels(450);
-               // Rect percentResearchSliderRect = percentResearchRect.RightPartPixels(percentResearchRect.width - 450);
-               // Widgets.Label(percentResearchLabelRect, "Percent required:");
                 percentResearchNeeded = Widgets.HorizontalSlider(percentResearchLabelRect, percentResearchNeeded, 0.05f, 1f, middleAlignment: false, label: Mathf.RoundToInt(percentResearchNeeded*100) + "%", leftAlignedLabel: null, rightAlignedLabel: null, roundTo: 0.05f);
             }
             else
@@ -165,15 +154,11 @@ namespace DIgnoranceIsBliss
                 ls.Gap();
                 Rect techsBehindRect = ls.GetRect(standardHeight);
                 Rect techsBehindLabelRect = techsBehindRect.LeftPartPixels(450);
-                //Rect techsBehindSliderRect = techsBehindRect.RightPartPixels(techsBehindRect.width - 450);
-                //Widgets.Label(techsBehindLabelRect, "Max # tech levels behind to encounter (-1 is any)");
                 numTechsBehind = Mathf.RoundToInt(Widgets.HorizontalSlider(techsBehindLabelRect, numTechsBehind, -1, 7f, middleAlignment: false, label: OffsetString(numTechsBehind) + " behind", leftAlignedLabel: null, rightAlignedLabel: null, roundTo: 1));
 
                 ls.Gap();
                 Rect techsAheadRect = ls.GetRect(standardHeight);
                 Rect techsAheadLabelRect = techsAheadRect.LeftPartPixels(450);
-                //Rect techsAheadSliderRect = techsAheadRect.RightPartPixels(techsAheadRect.width - 450);
-                //Widgets.Label(techsAheadLabelRect, "Max # tech levels ahead to encounter (-1 is any)");
                 numTechsAhead = Mathf.RoundToInt(Widgets.HorizontalSlider(techsAheadLabelRect, numTechsAhead, -1, 7f, middleAlignment: false, label: OffsetString(numTechsAhead) + " ahead", leftAlignedLabel: null, rightAlignedLabel: null, roundTo: 1));
             }
             if (a && a != useHighestResearched)

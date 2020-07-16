@@ -14,11 +14,11 @@ namespace DIgnoranceIsBliss.Core_Patches
     [HarmonyPatch("CanFireNowSub")]
     class Patch_PawnsArriveCanFireNowSub_Postfix
     {
-        public static void Postfix(ref IncidentParms parms)
+        public static void Postfix(ref IncidentParms parms, ref bool __result)
         {
-            if (parms.faction != null)
+            if (parms.faction != null && !IgnoranceBase.FactionInEligibleTechRange(parms.faction))
             {
-                if (!IgnoranceBase.FactionInEligibleTechRange(parms.faction))
+                if (IgnoranceSettings.changeQuests)
                 {
                     Faction newFaction = IgnoranceBase.GetRandomEligibleFaction();
                     if (newFaction != null) 
@@ -27,6 +27,10 @@ namespace DIgnoranceIsBliss.Core_Patches
                         return;
                     }
                     return;
+                }
+                else
+                {
+                    __result = true;
                 }
                 return;
             }

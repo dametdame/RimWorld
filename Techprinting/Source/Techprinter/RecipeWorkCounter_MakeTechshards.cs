@@ -34,7 +34,7 @@ namespace DTechprinting
                 ResearchProjectDef rpd;
                 if (!Base.thingDic.TryGetValue(thingDef, out rpd))
                     return false;
-                ThingDef shardDef = ShardMaker.Techshard(rpd);
+                ThingDef shardDef = ShardMaker.ShardForProject(rpd);
                 if (!stockpile.GetStoreSettings().AllowedToAccept(shardDef))
                 {
                     return false;

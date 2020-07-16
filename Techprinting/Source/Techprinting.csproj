@@ -301,6 +301,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Comps\CompProperties_Shardable.cs" />
+    <Compile Include="Comps\CompShardable.cs" />
+    <Compile Include="Core Patches\Patch_UninstallDesignateThing_Postfix.cs" />
+    <Compile Include="Core Patches\Patch_DeconstructDesignateThing_Postfix.cs" />
+    <Compile Include="Core Patches\Patch_GetGizmos_Postfix.cs" />
     <Compile Include="PatchOperations\AssignResearch.cs" />
     <Compile Include="Core Patches\Patch_ApplyTechprint_Prefix.cs" />
     <Compile Include="Core Patches\Patch_GenerateImpliedDefs_PostResolve_Postfix.cs" />
@@ -312,12 +317,17 @@
     <Compile Include="ResearchPalPatches\PatchResearchPalBase.cs" />
     <Compile Include="ResearchPalPatches\Patch_ResearchNodeDraw_Transpiler.cs" />
     <Compile Include="ResearchProjectHelper.cs" />
+    <Compile Include="ShardBuilding\Command_ShardBuilding.cs" />
+    <Compile Include="ShardBuilding\Designator_ShardBuilding.cs" />
+    <Compile Include="ShardBuilding\JobDriver_ShardBuilding.cs" />
+    <Compile Include="ShardBuilding\WorkGiver_ShardBuilding.cs" />
+    <Compile Include="Techprinter\JobDriver_ShardThing.cs" />
     <Compile Include="Techshards\ShardMaker.cs" />
     <Compile Include="Techprinter\RecipeWorkCounter_MakeTechshards.cs" />
     <Compile Include="Basic\TechprintingMod.cs" />
     <Compile Include="Basic\TechprintingSettings.cs" />
-    <Compile Include="Techshards\CompProperties_Techshard.cs" />
-    <Compile Include="Techshards\CompTechshard.cs" />
+    <Compile Include="Comps\CompProperties_Techshard.cs" />
+    <Compile Include="Comps\CompTechshard.cs" />
     <Compile Include="Core Patches\Patch_MakeRecipeProducts_Prefix.cs" />
     <Compile Include="Techshards\JobDriver_ApplyTechshards.cs" />
     <Compile Include="Techshards\StatWorker_ShardTech.cs" />

@@ -11,6 +11,7 @@ using HarmonyLib;
 using Verse.AI;
 using UnityEngine;
 using System.Reflection;
+using DTechprinting.Comps;
 
 namespace DTechprinting
 {
@@ -18,7 +19,6 @@ namespace DTechprinting
 	public static class Base
 
 	{
-
 		public static Dictionary<ThingDef, ResearchProjectDef> thingDic = null;
 		public static Dictionary<ResearchProjectDef, List<ThingDef>> researchDic = null;
 
@@ -30,7 +30,11 @@ namespace DTechprinting
 			public static RecipeDef DTechprintingRecipe;
 			public static RecipeDef DTechprintingStackRecipe;
 			public static JobDef ApplyTechshards;
+			public static JobDef ShardBuildingJob;
 			public static ThingCategoryDef DTechshards;
+			public static WorkTypeDef DTechprinting;
+			public static ThingDef DTechprinter;
+			public static DesignationDef ShardBuilding;
 		}
 
 
@@ -58,6 +62,8 @@ namespace DTechprinting
 				ResearchProjectHelper.SetTechprintRequirements();
 			if (TechprintingSettings.splitProjects)
 				ResearchProjectHelper.SplitAllProjects();
+
+			ResearchProjectHelper.SetHardTechprintReqs();
 
 			GenerateAllShards();
 
@@ -90,7 +96,7 @@ namespace DTechprinting
 		{
 			foreach (ResearchProjectDef rpd in researchDic.Keys.ToList())
 			{
-				ThingDef shardDef = ShardMaker.Techshard(rpd);
+				ThingDef shardDef = ShardMaker.ShardForProject(rpd);
 				if (shardDef == null)
 				{
 					Log.Message("No techshard found for " + rpd.defName + " in SetTechshardPrices");
@@ -112,7 +118,8 @@ namespace DTechprinting
 			}
 			
 		}
-
+		 
+		
 		public static void MakeThingDictionaries()
 		{
 			thingDic = new Dictionary<ThingDef, ResearchProjectDef>();
@@ -123,9 +130,11 @@ namespace DTechprinting
 				ResearchProjectDef rpd = ThingDefHelper.GetBestRPDForRecipe(recipe);
 				if (rpd != null && recipe.ProducedThingDef != null)
 				{
-					if (ShardMaker.Techshard(rpd) != null && (rpd.techprintCount > 0 || TechprintingSettings.printAllItems))
+					if (ShardMaker.ShardForProject(rpd) != null && (rpd.techprintCount > 0 || TechprintingSettings.printAllItems))
 					{
 						ThingDef producedThing = recipe.ProducedThingDef;
+						if (producedThing.GetCompProperties<CompProperties_Shardable>() == null)
+							producedThing.comps.Add(new CompProperties_Shardable());
 
 						thingDic.SetOrAdd(producedThing, rpd);
 
@@ -138,9 +147,36 @@ namespace DTechprinting
 				}
 			}
 
+			if (TechprintingSettings.shardBuildings)
+            {
+				foreach (ThingDef building in DefDatabase<ThingDef>.AllDefs.Where(x => x.category == ThingCategory.Building || x.building != null))
+                {
+					if (thingDic.ContainsKey(building))
+						continue;
+					ResearchProjectDef rpd = ThingDefHelper.GetBestRPDForBuilding(building);
+					if (rpd != null)
+					{
+						if (ShardMaker.ShardForProject(rpd) != null && (rpd.techprintCount > 0 || TechprintingSettings.printAllItems))
+						{
+							if (building.GetCompProperties<CompProperties_Shardable>() == null)
+								building.comps.Add(new CompProperties_Shardable());
+
+							thingDic.SetOrAdd(building, rpd);
+
+							List<ThingDef> things;
+							if (researchDic.TryGetValue(rpd, out things))
+								things.Add(building);
+							else
+								researchDic.Add(rpd, new List<ThingDef> { building });
+						}
+					}
+				}
+            }
+
 			GearAssigner.HardAssign(ref thingDic, ref researchDic);
 			GearAssigner.OverrideAssign(ref thingDic, ref researchDic);
 		}
+		
 
 		public static void UpdateTechshardRecipes()
 		{
@@ -150,14 +186,18 @@ namespace DTechprinting
 			if (thingDic == null || researchDic == null)
 				MakeThingDictionaries();
 
-			List<ResearchProjectDef> techList = researchDic.Keys.ToList().FindAll(x => !x.IsFinished && x.techprintCount > 0 && !x.TechprintRequirementMet); // base: projects with shard requirements unmet, always show
+			List<ResearchProjectDef> techList = researchDic.Keys.ToList().FindAll(x => ProjectIsPrintable(x));
+			/*
+			List<ResearchProjectDef> techList = researchDic.Keys.ToList().FindAll(x => !x.IsFinished && x.techprintCount > 0 && !x.TechprintRequirementMet); 
 			if (TechprintingSettings.printAllItems)
-				techList = techList.Concat(researchDic.Keys.ToList().FindAll(x => !x.IsFinished && x.techprintCount <= 0)).ToList(); // projects with no shard requirement, only when printAllItems
+				techList = techList.Concat(researchDic.Keys.ToList().FindAll(x => !x.IsFinished && x.techprintCount <= 0)).ToList(); 
+			
 			if (TechprintingSettings.enableUnlockedTechPrinting)
-				techList = techList.Concat(researchDic.Keys.ToList().FindAll(x => !x.IsFinished && x.techprintCount > 0 && x.TechprintRequirementMet)).ToList(); // projects with shards but requirement is met
+				techList = techList.Concat(researchDic.Keys.ToList().FindAll(x => !x.IsFinished && x.techprintCount > 0 && x.TechprintRequirementMet)).ToList(); 
+			
 			if (TechprintingSettings.enableCompletedTechPrinting)
 				techList = techList.Concat(researchDic.Keys.ToList().FindAll(x => x.IsFinished)).ToList(); // completed projects
-
+			*/
 			if (techList.NullOrEmpty())
 				return;
 			ThingFilter itemFilter = ClearFilter(DefOf.DTechprintingRecipe, 1);
@@ -174,6 +214,31 @@ namespace DTechprinting
 					}
 				}
 			}
+		}
+
+		public static bool ThingIsPrintable(ThingDef td)
+        {
+			ResearchProjectDef rpd;
+			if (!thingDic.TryGetValue(td, out rpd))
+				return false;
+			return (IsSingleAllowed(td) || IsStackAllowed(td, ShardMaker.stackSize)) && ProjectIsPrintable(rpd);
+        }
+
+		public static bool ProjectIsPrintable(ResearchProjectDef rpd)
+        {
+			if (!researchDic.ContainsKey(rpd)) // must have a shard
+				return false;
+			// this is organized for readability, not efficiency
+			if (!rpd.IsFinished && rpd.techprintCount > 0 && !rpd.TechprintRequirementMet) // base: projects with shard requirements unmet, always show
+				return true;
+			if (TechprintingSettings.printAllItems && (!rpd.IsFinished && rpd.techprintCount <= 0)) // projects with no shard requirement, only when printAllItems
+				return true;
+			if (TechprintingSettings.enableUnlockedTechPrinting && (!rpd.IsFinished && rpd.techprintCount > 0 && rpd.TechprintRequirementMet)) // projects with shards but requirement is met
+				return true;
+			if (TechprintingSettings.enableCompletedTechPrinting && (rpd.IsFinished)) // completed projects
+				return true;
+
+			return false;
 		}
 
 		public static bool IsSingleAllowed(ThingDef td)

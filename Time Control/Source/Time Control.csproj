@@ -301,6 +301,7 @@
     <Compile Include="Core Patches\JobTracker Patches\Patch_DriverTick_Prefix.cs" />
     <Compile Include="Core Patches\JobTracker Patches\Patch_JobTrackerTick_Transpiler.cs" />
     <Compile Include="Core Patches\JobTracker Patches\Patch_StartJob_Transpiler.cs" />
+    <Compile Include="Core Patches\JobTracker Patches\TestMated.cs" />
     <Compile Include="Core Patches\Patch_CanStartFleeingBecauseOfPawnAction_Transpiler.cs" />
     <Compile Include="Core Patches\Patch_InteractedTooRecentlyToInteract_Prefix.cs" />
     <Compile Include="Core Patches\Patch_MapPreTick_Prefix.cs" />

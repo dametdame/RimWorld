@@ -12,19 +12,44 @@ namespace DTechprinting
     public static class ThingDefHelper
     {
 
+		public static ResearchProjectDef GetBestRPDForBuilding(ThingDef td, bool ignoreLocked = false)
+        {
+			if (td.category != ThingCategory.Building && td.building == null)
+            {
+				Log.Error("Tried to get RPD for building, but thingDef is not building");
+				return null;
+			}
+			ResearchProjectDef overrideRPD;
+			if (GearAssigner.GetOverrideAssignment(td, out overrideRPD))
+				return overrideRPD;
+
+			if (td.researchPrerequisites != null && td.researchPrerequisites.Count > 0)
+			{
+				foreach (ResearchProjectDef prereq in td.researchPrerequisites)
+				{
+					if (prereq.techprintCount > 0)
+						return prereq;
+				}
+				if (TechprintingSettings.printAllItems || ignoreLocked)
+					return td.researchPrerequisites[0];
+			}
+
+			return null;
+		}
+
 		public static ResearchProjectDef GetBestRPDForRecipe(RecipeDef recipe, bool ignoreLocked = false)
 		{
-			ThingDef thing = recipe.ProducedThingDef;
-			if (thing == null)
+			ThingDef thingDef = recipe.ProducedThingDef;
+			if (thingDef == null)
 			{
 				return null;
 			}
 			ResearchProjectDef overrideRPD;
-			if (GearAssigner.GetOverrideAssignment(thing, out overrideRPD))
+			if (GearAssigner.GetOverrideAssignment(thingDef, out overrideRPD))
 				return overrideRPD;
-			if (thing.category == ThingCategory.Building)
+			if ((thingDef.category == ThingCategory.Building || thingDef.building != null) && !TechprintingSettings.shardBuildings)
 				return null;
-			if (TechprintingSettings.weaponsApparelOnly && (!thing.IsWeapon && !thing.IsApparel) && !ignoreLocked && !TechprintingSettings.printAllItems)
+			if (TechprintingSettings.weaponsApparelOnly && (!thingDef.IsWeapon && !thingDef.IsApparel) && !ignoreLocked && !TechprintingSettings.printAllItems)
 				return null;
 
 			if (recipe.researchPrerequisite != null) // direct prereq for this recipe
